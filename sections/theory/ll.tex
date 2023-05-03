@@ -1,0 +1,58 @@
+For the construnction of a $LLP(q,k)$ parser generator the construction of first and follow-set\cite[p. 5]{Vagner2007} and a $LL(k)$ parser generator is needed. A short explanation of the construction of a $LL(k)$ parser generator will be given since in the research of this project $k = 1$ was quite often explained but never $k > 1$ in a manner the author found understable.
+
+\begin{definition}[Truncated product]
+    Let $G = (N, T, P, S)$ be a grammar and $A, B \subseteq P((N \cup T)^*)$ be sets of symbol strings. The truncated product is defined in the following way.
+    \begin{gather*}
+        A \odot_k B \defeq \{\alpha\beta : \alpha \in A, \beta \in B, |\alpha\beta|\leq k \}
+    \end{gather*}
+\end{definition}
+
+\begin{definition}[Nonempty substring pairs]
+    Let $G = (N, T, P, S)$ be a grammar and $\omega \in (N \cup T)^*$ be a symbol string. The set of every nonempty way to split $\omega$ into two substrings is defined to be.
+    \begin{gather*}
+        \varphi(\omega) \defeq \{(\alpha, \beta) : \alpha \in (T \cup N)^+, \beta \in (T \cup N)^+, \alpha\beta = \omega\}
+    \end{gather*}
+\end{definition}
+
+\begin{algorithm}[Solving $FIRST_k$ set]
+    Let $G = (N, T, P, S)$ be a grammar, the first-sets can be solved as followed.
+    \begin{align*}
+        FIRST_k(\epsilon) =&\,\, \{\epsilon\} \\
+        FIRST_k(t) =&\,\, \{t\} \\
+        FIRST_k(A) =&\,\, \bigcup_{\delta \, : \, A \Rightarrow \delta \in P} FIRST_k(\delta) \\
+        FIRST_k(\omega) =&\,\, \bigcup_{(\alpha, \beta) \, \in \, \varphi(\omega)} FIRST_k(\alpha) \odot_k FIRST_k(\beta)
+    \end{align*}
+\end{algorithm}
+\noindent This may result in an infinite loop if implemented as is so fixed point iteration is used. Let $\mathcal{M}: N \to P(T^*)$ be a surjective function i.e. a dictionary which maps nonterminals to sets of terminal strings. $FIRST'_k$ is then the following modified version of $FIRST_k$.
+\begin{align*}
+    FIRST'_k(\epsilon, \mathcal{M}) =&\,\, \{\epsilon\} \\
+    FIRST'_k(t, \mathcal{M}) =&\,\, \{t\} \\
+    FIRST'_k(A, \mathcal{M}) =&\,\, \mathcal{M}(A) \\
+    FIRST'_k(\omega, \mathcal{M}) =&\,\, \bigcup_{(\alpha, \beta) \, \in \, \varphi(\omega)} FIRST'_k(\alpha, \mathcal{M}) \odot_k FIRST'_k(\beta, \mathcal{M})
+\end{align*}
+This function is then used to solve for a $FIRST_k$ function for a fixed $k$ with fixed point iteration the following way.
+\begin{enumerate}
+    \item Initialize a dictionary $\mathcal{M}_0$ such that $\mathcal{M}_0(A) = \emptyset$ where $\forall A \in N$.
+    \item A new dictionary $\mathcal{M}_{i+1}: N \to P(T^*)$ is constructed by $\mathcal{M}_{i+1}(A) = \bigcup_{\delta \, : \, A \Rightarrow \delta \in P} FIRST'_k(\delta, \mathcal{M}_{i})$ for all $A \in N$ where $\mathcal{M}_{i}$ is the last dictionary that was constructed.
+    \item If $\mathcal{M}_{i + 1} = \mathcal{M}_{i}$ then terminate the algorithm terminates else recompute step 2.
+\end{enumerate}
+Let $\mathcal{M}_f$ be the final dictionary after the algorithm terminates then it holds that $FIRST_k(\omega) = FIRST'_k(\omega, \mathcal{M}_f)$ if $k$ stays fixed.
+\begin{algorithm}[Solving $FOLLOW_k$ set]
+    Let $G = (N, T, P, S)$ be a grammar, the follow-sets can be solved as followed.
+    \begin{align*}
+        FOLLOW_k(A) &= \bigcup_{B : \, B \Rightarrow \alpha A \beta \in P} FIRST_k(\beta) \odot_k FOLLOW_k(B)
+    \end{align*}
+\end{algorithm}
+\noindent Once again this may not terminate so fixed point iteration can be used with following altered $FOLLOW_k$ and letting $\mathcal{M}: N \to P(T^*)$ be a surjective function.
+\begin{align*}
+    FOLLOW_k(A, \mathcal{M}) &= \bigcup_{B : \, B \Rightarrow \alpha A \beta \in P} FIRST_k(\beta) \odot_k \mathcal{M}(B)
+\end{align*}
+This $FOLLOW_k$ function for a fixed $k$ can then be computed using the following algorithm.
+\begin{enumerate}
+    \item Extend grammar $G = (N, T, P, S)$ using $G' = (N', T', P', S') = (N' \cup \{S'\}, T' \cup \{\square\}, P \cup \{P \to S \square^k\} S')$.
+    \item Initialize a dictionary $\mathcal{M}_0$ such that $\mathcal{M}_0(A) = \emptyset$ where $\forall A \in N \backslash \{S\}$ and $\mathcal{M}_0(S) = \{\square^k\}$.
+    \item A new dictionary $\mathcal{M}_{i+1}: N \to P(T^*)$ is constructed by $\mathcal{M}_{i+1}(A) = \bigcup_{B : \, B \Rightarrow \alpha A \beta \in P} FIRST_k(\beta) \odot_k \mathcal{M}_{i}(B)$ for all $A \in N$ where $\mathcal{M}_i$ is the last dictionary.
+    \item If $\mathcal{M}_{i+1} \neq \mathcal{M}_{i}$ then recompute step 3.
+    \item Let $\mathcal{M}_f$ be the final dictionary after step 4. is completed. Let $\mathcal{M}_u$ be another dictionary where $\mathcal{M}_u(A) = \{\alpha : \alpha \square^* \in \mathcal{M}_f(A)\}$ for all $A \in N \backslash \{S'\}$ 
+\end{enumerate}
+It then holds that $FOLLOW_k(A) = \mathcal{M}_u(A)$ if $k$ stays fixed for grammar $G$.
