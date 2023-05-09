@@ -1,0 +1,28 @@
+\subsubsection{The idea}
+The idea of the $LLP(q, k)$ grammar class comes from wanting to create an $LL(k)$ like grammar class which can be parsed in parallel. To describe how this is done a definition for a given state during $LL(k)$ parsing is needed.
+\begin{definition}[LL parser configuration]
+    Let $G = (N, T, P, S)$ be a context-free grammar that is an $LL(k)$ grammar for some $k \in \mathbb{Z}_+$. Let each production $p_i \in P$ be assigned a unique integer $i \in \{0, ..., |P| - 1\} = \mathcal{I}$. Then the set of every valid and invalid sequence of productions $\mathcal{S}$\footnote{It is chosen to use a squence for the ``prefix of  a left parse'' \cite[p. 5]{Vagner2007} because it did not seem obvious to which set the element is a member of.} is given by $\mathcal{S} = \{(a_k)_{k=0}^n : n \in \mathbb{N}, a_k \in \mathcal{I}\}$. A given configuarion \cite[p. 5]{Vagner2007} of a $LL(k)$ parser is then given by.
+    \begin{align*}
+        (w, \alpha, \pi) \in T^* \times (T \cup N)^* \times \mathcal{S}
+    \end{align*}
+\end{definition}
+\noindent For a $LL(k)$ parser configuration $(\omega, \alpha, \pi)$ would $\omega$ denote the input string, $\alpha$ denote the push down store and $\pi$ denote the the sequence of rules used to derive the consumed input string.
+
+When using deterministic $LL(k)$ parsing you want to create a parsing function $\phi: T^* \to \mathcal{S}$ for a grammar $G = (N, T, P, S)$. This parser function is a function which is able to create the production sequence as defined by the relation $\vdash^*$ \cite[p. 6]{Vagner2007}.
+\begin{align*}
+    \phi(\omega) = \pi \text{ where } (\omega, S, (\;)) \vdash^* (\epsilon, \epsilon, \pi) 
+\end{align*}
+If the $\vdash^*$ relation does not hold then $\omega$ can not be parsed. 
+
+The concept of deterministic $LLP(q,k)$ parsing is if a string $\omega \in T^*$ is going to be parsed then construct every pair such that.
+\begin{align*}
+    M =&\; \{((x, y), i) : \omega = \delta xy_i \beta, |x| = q, |y_i| = k\} \\
+    \cup&\; \{((x, y), i) : \omega = xy_i \beta, |x| \leq q, |y| = k\} \\
+    \cup&\; \{((x, y), i) : \omega = \delta xy_i, |x| = q, |y| \leq k\}
+\end{align*}
+Where $i \in \mathbb{N}$ denotes the index of where the start of the substring $y_i$ such the ordering can be kept. Then we would want to create a parsing function $\Phi: T^* \times T^* \to T^* \times (T \cup N)^* \times \mathcal{S}$
+
+\subsubsection{Determing if a grammar is LLP}
+Let $G = (N, T, P, S)$ be a context-free grammar from the $LL(k)$ grammar class. Then for a derivation $S \Rightarrow^*_{lm} \omega x y \beta$ it implies there exists some valid parser configuarion $(y\delta, \alpha, \pi)$
+
+$\{((x, y), (y\delta,\alpha, \pi)) : S \Rightarrow^*_{lm} \omega x y \beta \}$

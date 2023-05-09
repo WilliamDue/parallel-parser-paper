@@ -1,9 +1,9 @@
 For the construnction of a $LLP(q,k)$ parser generator the construction of first and follow-set \cite[p. 5]{Vagner2007} and a $LL(k)$ parser generator is needed. A short explanation of the construction of a $LL(k)$ parser generator will be given since in the research of this project $k = 1$ was quite often explained but never $k > 1$ in a manner the author found understable.
 
-The first and follow-set algorithms described comes from modifying Torben Mogensen description in his introductory compiler design book \cite[p. 55-65]{Mogensen}. The modification are using the truncated product instead of unions as described in the $LL(k)$ parser Wikipedia article\footnote{At the time of writing the Wikipedia article does have a description of constructing first and follow-sets for $k > 1$. The problem is the algorithm described does not fullfill the definition of first and follow-sets that is being used in the LLP paper \cite[p. 5]{Vagner2007}.} \cite{wiki:LL_parser}.
+The first and follow-set algorithms described takes heavy inspiration from Mogensens book Introduction to Compiler Design \cite[p. 55-65]{Mogensen} and the parser notes \cite[p. 10-15]{notes:parser} by Sestoft and Larsen. The modifications are mainly using the $LL(k)$ extension described in the Wikipedia article in the section ``Constructing an LL(k) parsing table''\footnote{At the time of writing the Wikipedia article does have a description of constructing first and follow-sets for $k > 1$. The problem is the algorithm described does not fullfill the definition of first and follow-sets that is being used in the LLP paper \cite[p. 5]{Vagner2007}.} \cite{wiki:LL_parser}.
 
 \begin{definition}[Truncated product]
-    Let $G = (N, T, P, S)$ be a context-free grammar, $A, B \subseteq \mathbb{P}((N \cup T)^*)$ be sets of symbol strings and $\omega, \delta \in (T \cup N)^*$. The truncated product is defined in the following way.
+    Let $G = (N, T, P, S)$ be a context-free grammar, $A, B \in \mathbb{P}((N \cup T)^*)$ be sets of symbol strings and $\omega, \delta \in (T \cup N)^*$. The truncated product is defined in the following way.
     \begin{gather*}
         A \odot_k B \defeq \left\{\underset{\gamma \in \{\omega \, : \, \omega\delta = \alpha\beta, |\omega| \leq k\}}{\arg \max} \; |\gamma| : \alpha \in A, \beta \in B\right\}
     \end{gather*}
@@ -21,7 +21,7 @@ The first and follow-set algorithms described comes from modifying Torben Mogens
     \begin{align*}
         FIRST_k(\epsilon) =&\,\, \{\epsilon\} \\
         FIRST_k(t) =&\,\, \{t\} \\
-        FIRST_k(A) =&\,\, \bigcup_{\delta \, : \, A \Rightarrow \delta \in P} FIRST_k(\delta) \\
+        FIRST_k(A) =&\,\, \bigcup_{\delta \, : \, A \to \delta \in P} FIRST_k(\delta) \\
         FIRST_k(\omega) =&\,\, \bigcup_{(\alpha, \beta) \, \in \, \varphi(\omega)} FIRST_k(\alpha) \odot_k FIRST_k(\beta)
     \end{align*}
 \end{algorithm}
@@ -35,7 +35,7 @@ The first and follow-set algorithms described comes from modifying Torben Mogens
 This function is then used to solve for a $FIRST_k$ function for a fixed $k$ with fixed point iteration the following way.
 \begin{enumerate}
     \item Initialize a dictionary $\mathcal{M}_0$ such that $\mathcal{M}_0(A) = \emptyset$ for all $A \in N$.
-    \item A new dictionary $\mathcal{M}_{i+1}: N \to \mathbb{P}(T^*)$ is constructed by $\mathcal{M}_{i+1}(A) = \bigcup_{\delta \, : \, A \Rightarrow \delta \in P} FIRST'_k(\delta, \mathcal{M}_{i})$ for all $A \in N$ where $\mathcal{M}_{i}$ is the last dictionary that was constructed.
+    \item A new dictionary $\mathcal{M}_{i+1}: N \to \mathbb{P}(T^*)$ is constructed by $\mathcal{M}_{i+1}(A) = \bigcup_{\delta \, : \, A \to \delta \in P} FIRST'_k(\delta, \mathcal{M}_{i})$ for all $A \in N$ where $\mathcal{M}_{i}$ is the last dictionary that was constructed.
     \item If $\mathcal{M}_{i + 1} = \mathcal{M}_{i}$ then terminate the algorithm terminates else recompute step 2.
 \end{enumerate}
 Let $\mathcal{M}_f$ be the final dictionary after the algorithm terminates then it holds that $FIRST_k(\omega) = FIRST'_k(\omega, \mathcal{M}_f)$ if $k$ stays fixed.
