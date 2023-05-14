@@ -62,6 +62,7 @@
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
 \newtheorem{algorithm}{Algorithm}[section]
+\newtheorem{example}{Example}[section]
 \DeclareMathOperator{\sign}{sign}
 
 \fancyhf{}
@@ -95,15 +96,30 @@
 
 
 \section{Introduction}
-\section{Theory}
 
+\section{Theory}
 \subsection{\texorpdfstring{$LL(k)$}{TEXT} Parser Generator}
 \input{sections/theory/ll.tex}
 
 \subsection{\texorpdfstring{$LLP(q,k)$}{TEXT} Parser Generator}
 \input{sections/theory/llp.tex}
+
+
 \section{Implementation}
+
+\subsection{Assumptions}
+\input{sections/implementation/assumptions.tex}
+
+\subsection{Algorithm 8}
+\input{sections/implementation/algorithm8.tex}
+
 \section{Testing}
+\subsection{First and Follow sets}
+\input{sections/testing/first_follow.tex}
+
+\subsection{\texorpdfstring{$LLP(q,k)$}{TEXT}}
+\input{sections/testing/llp.tex}
+
 \section{Conclusion}
 
 \printbibliography

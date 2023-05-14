@@ -1,28 +1,41 @@
 \subsubsection{The idea}
 The idea of the $LLP(q, k)$ grammar class comes from wanting to create an $LL(k)$ like grammar class which can be parsed in parallel. To describe how this is done a definition for a given state during $LL(k)$ parsing is needed.
 \begin{definition}[LL parser configuration]
-    Let $G = (N, T, P, S)$ be a context-free grammar that is an $LL(k)$ grammar for some $k \in \mathbb{Z}_+$. Let each production $p_i \in P$ be assigned a unique integer $i \in \{0, ..., |P| - 1\} = \mathcal{I}$. Then the set of every valid and invalid sequence of productions $\mathcal{S}$\footnote{It is chosen to use a squence for the ``prefix of  a left parse'' \cite[p. 5]{Vagner2007} because it did not seem obvious to which set the element is a member of.} is given by $\mathcal{S} = \{(a_k)_{k=0}^n : n \in \mathbb{N}, a_k \in \mathcal{I}\}$. A given configuarion \cite[p. 5]{Vagner2007} of a $LL(k)$ parser is then given by.
+    \label{def:configuration}
+    Let $G = (N, T, P, S)$ be a context-free grammar that is an $LL(k)$ grammar for some $k \in \mathbb{Z}_+$. Let each production $p_i \in P$ be assigned a unique integer $i \in \{0, ..., |P| - 1\} = \mathcal{I}$. Then the set of every valid and invalid sequence of productions $\mathcal{S}$\footnote{It is chosen to use a squence for the ``prefix of  a left parse'' \cite[5]{Vagner2007} because it did not seem obvious to which set the element is a member of.} is given by $\mathcal{S} = \{(a_k)_{k=0}^n : n \in \mathbb{N}, a_k \in \mathcal{I}\}$. A given configuration \cite[p. 5]{Vagner2007} of a $LL(k)$ parser is then given by.
     \begin{align*}
         (w, \alpha, \pi) \in T^* \times (T \cup N)^* \times \mathcal{S}
     \end{align*}
 \end{definition}
-\noindent For a $LL(k)$ parser configuration $(\omega, \alpha, \pi)$ would $\omega$ denote the input string, $\alpha$ denote the push down store and $\pi$ denote the the sequence of rules used to derive the consumed input string.
+\noindent For a $LL(k)$ parser configuration $(\omega, \alpha, \pi)$ would $\omega$ denote the input string, $\alpha$ denote the push down store and $\pi$ denote the sequence of rules used to derive the consumed input string.
 
-When using deterministic $LL(k)$ parsing you want to create a parsing function $\phi: T^* \to \mathcal{S}$ for a grammar $G = (N, T, P, S)$. This parser function is a function which is able to create the production sequence as defined by the relation $\vdash^*$ \cite[p. 6]{Vagner2007}.
+When using deterministic $LL(k)$ parsing you want to create a parsing function $\phi: T^* \to \mathcal{S}$ for a grammar $G = (N, T, P, S)$. This parser function is a function which is able to create the production sequence as defined by the relation $\vdash^*$ \cite[6]{Vagner2007}.
 \begin{align*}
-    \phi(\omega) = \pi \text{ where } (\omega, S, (\;)) \vdash^* (\epsilon, \epsilon, \pi) 
+    \phi(w) = \pi \text{ where } (w, S, (\;)) \vdash^* (\epsilon, \epsilon, \pi) 
 \end{align*}
-If the $\vdash^*$ relation does not hold then $\omega$ can not be parsed. 
+If the $\vdash^*$ relation does not hold then $w$ can not be parsed. 
 
-The concept of deterministic $LLP(q,k)$ parsing is if a string $\omega \in T^*$ is going to be parsed then construct every pair such that.
+The concept of deterministic $LLP(q,k)$ parsing is if a string $w \in T^*$ is going to be parsed then construct every pair such that.
 \begin{align*}
-    M =&\; \{((x, y), i) : \omega = \delta xy_i \beta, |x| = q, |y_i| = k\} \\
-    \cup&\; \{((x, y), i) : \omega = xy_i \beta, |x| \leq q, |y| = k\} \\
-    \cup&\; \{((x, y), i) : \omega = \delta xy_i, |x| = q, |y| \leq k\}
+    M =&\; \{((x, y), i) : w = \delta xy_i \beta, |x| = q, |y_i| = k\} \\
+    \cup&\; \{((x, y), i) : w = xy_i \beta, |x| \leq q, |y| = k\} \\
+    \cup&\; \{((x, y), i) : w = \delta xy_i, |x| = q, |y| \leq k\}
 \end{align*}
-Where $i \in \mathbb{N}$ denotes the index of where the start of the substring $y_i$ such the ordering can be kept. Then we would want to create a parsing function $\Phi: T^* \times T^* \to T^* \times (T \cup N)^* \times \mathcal{S}$
+Where $i \in \mathbb{N}$ denotes the index of where the start of the substring $y_i$ such the ordering can be kept. Then we would want to create table lookup function $\Phi: T^* \times T^* \to (T \cup N)^* \times (T \cup N)^* \times \mathcal{S}$. This function maps the pairs $(x,y)$ to a triplet $(\omega, \alpha, \pi)$ which is much the same as the configuration described in definition \ref{def:configuration}. The difference is $\omega$ is the push down store before parsing $y$s first terminal and $\alpha$ is after parsing the first terminal of $y$. The idea is then you can apply $\Phi$ to all the pairs constructed from $w$. Afterwards these pairs are glued together to determined if the resulting triplet is $(S, \epsilon, \pi)$ meaning the input was parsable. This is described in detail in the LLP paper \cite[7]{Vagner2007}, but this description will be helpful for the rest of the paper.
 
-\subsubsection{Determing if a grammar is LLP}
-Let $G = (N, T, P, S)$ be a context-free grammar from the $LL(k)$ grammar class. Then for a derivation $S \Rightarrow^*_{lm} \omega x y \beta$ it implies there exists some valid parser configuarion $(y\delta, \alpha, \pi)$
+\subsubsection{Determining if a grammar is LLP}
+When dealing with a $LL(k)$ parser a common answer to if the grammar is a $LL(k)$ parser is: if the parser table can be constructed then it is a $LL(k)$ grammar. The same goes for $LLP(q,k)$ grammars, that is a grammar is a $LLP(q,k)$ if the $LLP(q, k)$ table can be constructed.
 
-$\{((x, y), (y\delta,\alpha, \pi)) : S \Rightarrow^*_{lm} \omega x y \beta \}$
+The first step in determining if a grammar is a $LLP(q,k)$ grammar is if it is in the $LL$ grammar class. This is because the $LLP$ parser uses the $LL$ parser to construct the table, therefore the class suffers from the same limitations. The next step is to determine if the $(x, y)$ pair leads to multiple $(\omega, \alpha, \pi)$ triplets. This is what definition 10 \cite[13]{Vagner2007} is used for, to determine if the grammar is LLP.
+
+Definition 10 \cite[13]{Vagner2007} uses the $PSLS(x, y)$ \cite[12]{Vagner2007} values to determine the initial push down stores which can be used to determine final push down store in the triplet $(\omega, \alpha, \pi)$. The trouble is when working with $LLP$ grammars the $PSLS(x, y)$ definition makes it hard to realize if a grammar is $LLP$.
+
+% I need to think of a way to explain it better where i account for prefixes.
+\begin{example}
+    Let $(\{A, B\}, \{a, b\}, P, A)$ be a context free grammar where $P$ is.
+    \begin{gather*}
+        A \to a b b B \qquad B \to b \qquad B \to A
+    \end{gather*}
+    If this grammar where 
+    The initial push down store for the admissible pair $(b, b)$ is $PSLS(b, b) = \{b, B\}$. This is because the LL parser configuration can either be $(bw, B, \pi)$ or $(b, b, \pi)$ where $w \in T^+$. This configuration is right after the first $b$ in the pair is parsed i.e. a string $bbw$ or $bb$ is parsed. The configuration before the first $b$ is parse could be $(bbw, bB, \pi)$ or $(bb, bb, \pi)$. Therefore, this grammar is not $LLP(1, 1)$, but it is $LLP(2, 1)$.
+\end{example}

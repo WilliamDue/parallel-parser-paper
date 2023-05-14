@@ -1,6 +1,6 @@
-For the construnction of a $LLP(q,k)$ parser generator the construction of first and follow-set \cite[p. 5]{Vagner2007} and a $LL(k)$ parser generator is needed. A short explanation of the construction of a $LL(k)$ parser generator will be given since in the research of this project $k = 1$ was quite often explained but never $k > 1$ in a manner the author found understable.
+For the construnction of a $LLP(q,k)$ parser generator the construction of first and follow-set \cite[5]{Vagner2007} and a $LL(k)$ parser generator is needed. A short explanation of the construction of a $LL(k)$ parser generator will be given since in the research of this project $k = 1$ was quite often explained but never $k > 1$ in a manner the author found understandable.
 
-The first and follow-set algorithms described takes heavy inspiration from Mogensens book Introduction to Compiler Design \cite[p. 55-65]{Mogensen} and the parser notes \cite[p. 10-15]{notes:parser} by Sestoft and Larsen. The modifications are mainly using the $LL(k)$ extension described in the Wikipedia article in the section ``Constructing an LL(k) parsing table''\footnote{At the time of writing the Wikipedia article does have a description of constructing first and follow-sets for $k > 1$. The problem is the algorithm described does not fullfill the definition of first and follow-sets that is being used in the LLP paper \cite[p. 5]{Vagner2007}.} \cite{wiki:LL_parser}.
+The first and follow-set algorithms described takes heavy inspiration from Mogensens book Introduction to Compiler Design \cite[55-65]{Mogensen} and the parser notes \cite[10-15]{notes:parser} by Sestoft and Larsen. The modifications are mainly using the $LL(k)$ extension described in the Wikipedia article in the section ``Constructing an LL(k) parsing table''\footnote{At the time of writing the Wikipedia article does have a description of constructing first and follow-sets for $k > 1$. The problem is the algorithm described does not fullfill the definition of first and follow-sets that is being used in the LLP paper \cite[5]{Vagner2007}.} \cite{wiki:LL_parser}.
 
 \begin{definition}[Truncated product]
     Let $G = (N, T, P, S)$ be a context-free grammar, $A, B \in \mathbb{P}((N \cup T)^*)$ be sets of symbol strings and $\omega, \delta \in (T \cup N)^*$. The truncated product is defined in the following way.
@@ -17,6 +17,7 @@ The first and follow-set algorithms described takes heavy inspiration from Mogen
 \end{definition}
 
 \begin{algorithm}[Solving $FIRST_k$ set]
+    \label{algorithm:first}
     Let $G = (N, T, P, S)$ be a context-free grammar, the first-sets can be solved as followed.
     \begin{align*}
         FIRST_k(\epsilon) =&\,\, \{\epsilon\} \\
@@ -40,6 +41,7 @@ This function is then used to solve for a $FIRST_k$ function for a fixed $k$ wit
 \end{enumerate}
 Let $\mathcal{M}_f$ be the final dictionary after the algorithm terminates then it holds that $FIRST_k(\omega) = FIRST'_k(\omega, \mathcal{M}_f)$ if $k$ stays fixed.
 \begin{algorithm}[Solving $FOLLOW_k$ set]
+    \label{algorithm:follow}
     Let $G = (N, T, P, S)$ be a context-free grammar, the follow-sets can be solved as followed.
     \begin{align*}
         FOLLOW_k(A) &= \bigcup_{B \, : \, B \to \alpha A \beta \in P} FIRST_k(\beta) \odot_k FOLLOW_k(B)
