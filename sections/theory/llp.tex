@@ -36,6 +36,13 @@ Definition 10 \cite[13]{Vagner2007} uses the $PSLS(x, y)$ \cite[12]{Vagner2007} 
     \begin{gather*}
         A \to a b b B \qquad B \to b \qquad B \to A
     \end{gather*}
-    If this grammar where 
-    The initial push down store for the admissible pair $(b, b)$ is $PSLS(b, b) = \{b, B\}$. This is because the LL parser configuration can either be $(bw, B, \pi)$ or $(b, b, \pi)$ where $w \in T^+$. This configuration is right after the first $b$ in the pair is parsed i.e. a string $bbw$ or $bb$ is parsed. The configuration before the first $b$ is parse could be $(bbw, bB, \pi)$ or $(bb, bb, \pi)$. Therefore, this grammar is not $LLP(1, 1)$, but it is $LLP(2, 1)$.
+    The initial push down store for the admissible pair $(b, b)$ is $\text{PSLS}(b, b) = \{b, B\}$. This is because the LL parser configuration can either be $(bw, B, \pi)$ or $(b, b, \pi)$ where $w \in T^+$. This configuration is right after the first $b$ in the pair is parsed i.e. a string $bbw$ or $bb$ is parsed. The configuration before the first $b$ is parse could be $(bbw, bB, \pi)$ or $(bb, bb, \pi)$. Therefore, this grammar is not $LLP(1, 1)$, but it is $LLP(2, 1)$.
+\end{example}
+
+\begin{example}
+    Let $(\{S\}, \{[, ]\}, P, S)$ be a context free grammar where $P$ is.
+    \begin{gather*}
+        S \to [S] \qquad S \to \epsilon
+    \end{gather*}
+    This grammar seem like it is not $LLP(q, k)$ for any $q, k \geq 1$ because for any pairs $([^q, [^k)$ can lead to a LL configuration $(]^n, S]^n, \pi)$ where $q + k \leq n$. This grammar is actually a $LLP(1,1)$ grammar because the LLP parser uses the shortest prefix of the push down store when performing the gluing the LLP triplets $(\omega, \alpha, \pi)$. The triplet for $([^q, [^k)$ would then be $(S, S], \pi)$ because $S$ is the initial push down store and $S]$ is the final push down store after parsing expanding $S$ and popping $[$.
 \end{example}
