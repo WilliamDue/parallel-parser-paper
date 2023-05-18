@@ -42,18 +42,24 @@
   style=FiraCodeStyle,   % Use predefined FiraCodeStyle
   basicstyle=\ttfamily   % Use \ttfamily for source code listings
 }
-
 \patchcmd{\section}{\bfseries}{\bfseries\boldmath }{}{}
 \patchcmd{\subsection}{\bfseries}{\bfseries\boldmath }{}{}
 \patchcmd{\subsubsection}{\bfseries}{\bfseries\boldmath }{}{}
 
 \hypersetup{
-    colorlinks=True,
-    urlcolor=blue,
-    citecolor=red,
-    menucolor=black,
-}
-
+  colorlinks=True,
+  urlcolor=blue,
+  citecolor=red,
+  menucolor=black,
+  }
+  
+\newcommand\LL{\text{LL}}
+\newcommand\LLP{\text{LLP}}
+\newcommand\PSLS{\text{PSLS}}
+\newcommand\FIRST{\text{FIRST}}
+\newcommand\FOLLOW{\text{FOLLOW}}
+\newcommand\BEFORE{\text{BEFORE}}
+\newcommand\LAST{\text{LAST}}
 \newcommand\defiff{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{\iff}}}
 \newcommand\defeq{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
 \theoremstyle{definition}
@@ -98,10 +104,10 @@
 \section{Introduction}
 
 \section{Theory}
-\subsection{\texorpdfstring{$LL(k)$}{TEXT} Parser Generator}
+\subsection{\texorpdfstring{$\LL(k)$}{TEXT} Parser Generator}
 \input{sections/theory/ll.tex}
 
-\subsection{\texorpdfstring{$LLP(q,k)$}{TEXT} Parser Generator}
+\subsection{\texorpdfstring{$\LLP(q,k)$}{TEXT} Parser Generator}
 \input{sections/theory/llp.tex}
 
 
@@ -113,11 +119,14 @@
 \subsection{Algorithm 8}
 \input{sections/implementation/algorithm8.tex}
 
+\subsection{Parser}
+\input{sections/implementation/parser.tex}
+
 \section{Testing}
 \subsection{First and Follow sets}
 \input{sections/testing/first_follow.tex}
 
-\subsection{\texorpdfstring{$LLP(q,k)$}{TEXT}}
+\subsection{\texorpdfstring{$\LLP(q,k)$}{TEXT}}
 \input{sections/testing/llp.tex}
 
 \section{Conclusion}
