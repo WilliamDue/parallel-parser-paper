@@ -1,5 +1,11 @@
-The $\FIRST$ implementation corresponds to algorithm \ref{algorithm:first} and the $\LAST$ implementation corresponds to the one mentioned in the LLP paper \cite[12]{Vagner2007} which uses an existing $\FIRST$ implementation. A big problem with $\FIRST$ is it is extremely expensive of the truncated product step.
+The $\FIRST$ implementation corresponds to algorithm \ref{algorithm:first} and the $\LAST$ implementation corresponds to the one mentioned in the LLP paper \cite[12]{Vagner2007} which uses an existing $\FIRST$ implementation. A big problem with $\FIRST$ is it is extremely expensive because of the truncated product step.
 \begin{align*}
     \FIRST'_k(\omega, \mathcal{M}) =&\,\, \bigcup_{(\alpha, \beta) \, \in \, \varphi(\omega)} \FIRST'_k(\alpha, \mathcal{M}) \odot_k \FIRST'_k(\beta, \mathcal{M})
 \end{align*}
-This inefficiency can be solved by the use of memoization since $\FIRST$ is recursively defined. In Haskell this can be done using a \lstinline{State} monad from the \lstinline{mtl} library. A problem with this is it will end up taking a lot of memory because every possible input string will be stored with its corresponding $\FIRST$ set. This does not occur in the code since the memoization is mainly used in the LLP collection. Therefore, it is bounded by the valid substrings in the grammar. The grammars used in the table generator are not grammars that creates every combination of terminals. Therefore, since this does not seem like a practical use case, this is not expected to occur practice.
+This inefficiency can be solved by the use of memoization since $\FIRST$ is recursively defined. In Haskell this can be done using a \lstinline{State} monad from the \lstinline{mtl} library. A problem with this is it will end up taking a lot of memory because every possible input string might end up being stored with its corresponding $\FIRST$ set. Since the $\FIRST$ and $\LAST$ implementation is only used on derivable strings then the memory must be bounded by the grammar.
+
+The worst case grammar one could use is a grammar which generates every combination of terminals.
+\begin{align*}
+    S \to \epsilon | a_1 S | a_2 S | a_3 S | \cdots | a_n S
+\end{align*}
+This could occur but does not seem useful so such a case seem unlikely to happen.

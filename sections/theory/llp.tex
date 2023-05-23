@@ -1,5 +1,5 @@
 \subsubsection{The idea}
-The idea of the $\LLP(q, k)$ grammar class comes from wanting to create an $\LL(k)$ like grammar class which can be parsed in parallel. To describe how this is done a definition for a given state during $\LL(k)$ parsing is needed.
+The idea of the $\LLP(q, k)$ grammar class comes from wanting to create a $\LL(k)$ like grammar class which can be parsed in parallel. To describe how this is done a definition for a given state during $\LL(k)$ parsing is needed.
 
 \begin{definition}[Production sequence]
     \label{def:production-sequence}
@@ -36,24 +36,32 @@ Where $i \in \mathbb{N}$ denotes the index of where the start of the substring $
     \begin{align*}
         (\omega, \alpha, \pi) \in (T \cup N)^* \times (T \cup N)^* \times \mathcal{S}
     \end{align*}
-    Where $\omega$ is the initial push down store, $\alpha$ is the final push down store after parsing $(y, \omega, (\;)) = (vw, \omega, (\;)) \vdash^* (w, \alpha, \pi)$, $v \in T$ and $w \in T^*$ and $\pi$ are the resulting productions.
+    Where $\omega$ is the initial push down store, $\alpha$ is the final push down store after parsing $(y, \omega, (\;)) = (vw, \omega, (\;)) \vdash^* (w, \alpha, \pi)$, $v \in T$, $w \in T^*$ and $\pi$ are the resulting productions.
 \end{definition}
 \noindent After all the $x, y$ pairs have been constructed they are glued together to determined if the resulting triplet is $(S, \epsilon, \pi)$ meaning the input was parsable. This is described in detail in the LLP paper \cite[7]{Vagner2007}, but this description will be helpful for the rest of the paper.
 
 \subsubsection{Determining if a grammar is LLP}
-When dealing with a $\LL(k)$ parser a common answer to if the grammar is a $\LL(k)$ parser is: if the parser table can be constructed then it is a $\LL(k)$ grammar. The same goes for $\LLP(q,k)$ grammars, that is a grammar is a $\LLP(q,k)$ if the $\LLP(q, k)$ table can be constructed.
+When dealing with a $\LL(k)$ parser a common answer to if the grammar is a $\LL(k)$ grammar is: if the $LL(k)$ parser table can be constructed then it is a $\LL(k)$ grammar. The same goes for $\LLP(q,k)$ grammars, that is a grammar is a $\LLP(q,k)$ if the $\LLP(q, k)$ table can be constructed.
 
 The first step in determining if a grammar is a $\LLP(q,k)$ grammar is if it is in the LL grammar class. This is because the LLP parser uses the LL parser to construct the table, therefore the class suffers from the same limitations. The next step is to determine if the $(x, y)$ pair leads to multiple $(\omega, \alpha, \pi)$ LLP configurations. This is what definition 10 \cite[13]{Vagner2007} is used for, to determine if the grammar is LLP.
 
-Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007} values to determine the initial push down stores which can be used to determine final push down store in the LLP configuration $(\omega, \alpha, \pi)$. The trouble is when working with LLP grammars the $\PSLS(x, y)$ definition can be troublesome to use to understand if a grammar is $\LLP(q, k)$.
-
+Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007} values to determine the initial push down stores which can be used to determine the LLP configuration. The trouble is when working with LLP grammars the $\PSLS(x, y)$ definition can be troublesome when trying to understand if a grammar is $\LLP(q, k)$. Therefore, some examples of using the definition are given below.
 
 \begin{example}
+    \label{ex:llp21}
     Let $(\{A, B\}, \{a, b\}, P, A)$ be a context free grammar where $P$ is.
     \begin{gather*}
         A \to a b b B \qquad B \to b \qquad B \to A
     \end{gather*}
-    The initial push down store for the admissible pair $(b, b)$ is $\PSLS(b, b) = \{b, B\}$. Therefore, this grammar is not $\LLP(1, 1)$, but it is $\LLP(2, 1)$.
+    It will be checked if the grammar is $\LLP(1, 1)$, when computing $\PSLS(b,b)$ it can be seen there exists the following occurrences of $bb$ which leads to two different initial push down stores.
+    \begin{align*}
+        A \Rightarrow_{lm}^* (abb)^*A \Rightarrow (abb)^*abb_xB_{B\gamma} \Rightarrow^* (abb)^*abb_xb_y
+    \end{align*}
+    This derivation\footnote{The subscripts denote what the symbols correspond to in the $\PSLS$ definition and does change what the symbols mean in the grammar.} corresponds to the first set in the $\PSLS(b, b)$ definition. The shortest prefix of $B$ is $B$ where $\FIRST_1(b) \subseteq \FIRST_1(B)$ so $B \in \PSLS(b,b)$ \cite[2]{errata:Vagner2007} by definition. The other occurrence comes from the last set in the $\PSLS$ definition.
+    \begin{align*}
+        A \Rightarrow_{lm}^* (abb)^*A \Rightarrow (abb)^*ab_xb_yB \Rightarrow^* (abb)^*ab_xb_yB
+    \end{align*}
+    Since $\FIRST_1(b) = \{b\}$ then $b \in \PSLS(b, b)$ by definition. The initial push down store for the admissible pair $(b, b)$ is $\PSLS(b, b) = \{b, B\}$. Therefore, by Definition 10 \cite[13]{Vagner2007} this grammar is not $\LLP(1, 1)$. If one were to check for all admissible pairs then they would find that $\PSLS(b,b)$ is the only problem. If one wishes to parse the grammar a $LLP(2, 1)$ parser can be used. It solves the ambiguities since $\PSLS(ab, b) = \{b\}$ and $\PSLS(bb, b) = \{B\}$.
 \end{example}
 
 \begin{example}
@@ -61,18 +69,21 @@ Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007}
     \begin{gather*}
         S \to [S] \qquad S \to \epsilon
     \end{gather*}
-    This grammar seems like it is not $\LLP(q, k)$ for any $q, k \geq 1$ because for any pairs $([^q, [^k)$ can lead to a LL configuration $(]^n, S]^n, \pi)$ where $q + k \leq n$. This grammar is actually a $\LLP(1,1)$ grammar because the LLP parser uses the shortest prefix of the initial push down store when performing the gluing the LLP configuration. The LLP configuration for $([^q, [^k)$ would then be $(S, S], \pi)$ because $S$ is the initial push down store and $S]$ is the final push down store after parsing expanding $S$ and popping $[$.
+    This grammar seems like it is not $\LLP(q, k)$ for any $q, k \geq 1$ because when LL parsing the pairs $([^q, ]^k)$ can lead multiple LL configuration $(]^n, S]^n, \pi)$ where $q + k \leq n$. This grammar is actually a $\LLP(1,1)$ grammar because the LLP parser only uses the shortest prefix of the initial push down store in the LLP configuration. This can be determined as not a problem by using the $\PSLS$ definition.
+    \begin{align*}
+        S \Rightarrow_{lm}^* [^nS]^n \Rightarrow [^{n + 1}S]^{n + 1} \Rightarrow^* [^{n + 1}]^{n + 1}
+    \end{align*}
+    Here the admissible pair $(x, y)$ are $([^q, ]^k)$ where $q, k \leq n + 1$ for a $\LLP(q, k)$ grammar. Here $B\gamma$ from the definition corresponds to $S]^{n+1}$ and the shortest prefix of $S]^{n+1}$ is $S]$ since $\FIRST_1(S) = \{\epsilon\}$, but $\FIRST_1(]^k) \subseteq \FIRST_1(S])$ holds. Therefore, this is not a reason for the grammar not being $\LLP(q,k)$.
 \end{example}
-
 
 \begin{example}
     Let $(\{S\}, \{a\}, P, S)$ be a context free grammar where $P$ is.
     \begin{gather*}
         S \to aaS \qquad S \to \epsilon
     \end{gather*}
-    This grammar is mentioned in the LLP paper \cite[16]{Vagner2007} as a grammar that is not $\LLP(q,k)$ for any $q, k \in \mathbb{Z}_+$. This is because pair $(a^q, a^k)$ could lead to the possible initial push down stores is $\PSLS(a^q, a^k) = \{a, S\}$. If the productions for the grammar were.
+    This grammar is mentioned in the LLP paper \cite[16]{Vagner2007} as a grammar that is not $\LLP(q,k)$ for any $q, k \in \mathbb{Z}_+$. This is because the pairs $(a^q, a^k)$ could lead to the possible initial push down stores are $\PSLS(a^q, a^k) = \{a, S\}$. This is much the same reason as to why Example \ref{ex:llp21} is not $\LLP(1, 1)$. The trouble with this grammar is even when increasing $q$ or $k$ there is not a symbol that can make $\PSLS(a^q, a^k)$ become a singleton. If the productions for the grammar were.
     \begin{gather*}
         S \to aS \qquad S \to \epsilon
     \end{gather*}
-    Then the grammar is $\LLP(1, 1)$ because now only $\PSLS(a^q, a^k) = \{S\}$ only can occur.
+    Then the grammar is $\LLP(1, 1)$ because now only $\PSLS(a^q, a^k) = \{S\}$ can occur.
 \end{example}

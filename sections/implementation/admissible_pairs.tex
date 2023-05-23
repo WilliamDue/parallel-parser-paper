@@ -1,4 +1,4 @@
-A method for computing admissible pairs is needed for algorithm 15 \cite[15]{Vagner2007}. These admissible are as defined pairs $(x,y)$ from the $\PSLS$ table such that $xy \in \mathcal{L}(G)$ where $G$ is the grammar. The obvious way to do this is simply creating all leftmost derived strings from the start i.e.
+A method for computing admissible pairs is needed for algorithm 15 \cite[15]{Vagner2007}. These admissible pairs are such that $xy \in \mathcal{L}(G)$ where $G$ is the grammar. The obvious way to do this is simply creating all leftmost derived strings from the start i.e.
 \begin{align*}
     \{w : S \Rightarrow_{lm}^* w, w \in T^*, |w| \leq 2 (q + k + 1)\}
 \end{align*}
@@ -8,10 +8,10 @@ An alternative idea was for every production $P \to a_{1}a_{2}a_{3} \dots a_{n}$
 \begin{gather*}
     A_{1} \to a_{1}a_{2}a_{3} \dots a_{n} \qquad A_{2} \to a_{2}a_{3} \dots a_{n} \qquad A_{3} \to a_{3} \dots a_{n} \qquad A_{n} \to  a_{n}
 \end{gather*}
-Then for all new production created from each existing production create a new starting nonterminal $S'$ which has the production that leads to any nonterminal i.e.
+Then for all new productions created from each existing production create a new starting nonterminal $S'$ which has all productions that leads to any nonterminal i.e.
 \begin{align*}
     S' \to  \mathcal{N} \text{ where } \mathcal{N} \in N
 \end{align*}
-Then using $\FIRST_{q + k + 1}(S')$ and $\FOLLOW_{q + k + 1}(S')$ to determine $\LL$ parser table. The parser tables terminal keys and checking if $xy$ is infix of any.
+Then using $\FIRST_{q + k + 1}(S')$ and $\FOLLOW_{q + k + 1}(S')$ to construct a $\LL$ parser table. Then by creating a set of the parser tables terminal keys one is able to check if $xy$ is infix of any elements in the set.
 
 The problem is this is slower than constructing the leftmost derivations described. This is probably because the grammar ends up getting really large so the fix point iteration of $\FIRST$ and $\FOLLOW$ becomes expensive. Also, the leftmost derivations are only constructed once so the first method are likely to be a good fit.
