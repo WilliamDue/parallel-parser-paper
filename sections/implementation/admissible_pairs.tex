@@ -1,12 +1,8 @@
-A method for computing admissible pairs is needed for algorithm 15 \cite[15]{Vagner2007}. These admissible pairs are such that $xy \in \mathcal{L}(G)$ where $G$ is the grammar. The obvious way to do this is simply creating all leftmost derived strings from the start i.e.
-\begin{align*}
-    \{w : S \Rightarrow_{lm}^* w, w \in T^*, |w| \leq 2 (q + k + 1)\}
-\end{align*}
-Then if $w = axyb$ where $a, b \in T^*$ then $xy$ occurs as a string within the grammar and therefore $(x, y)$ is an admissible pair. This matches the current implementation and is the fasts' implementation the author was able to create.
+A method for computing admissible pairs is needed for algorithm 15 \cite[15]{Vagner2007}. These admissible pairs are substrings $x$ and $y$ such that $xy$ is infix of some string $w \in \mathcal{L}(G)$ where $G = (N, T, P, S)$ is the grammar. 
 
-An alternative idea was for every production $P \to a_{1}a_{2}a_{3} \dots a_{n}$ create productions for all tails of the right-hand side i.e. the productions created from $P$ are.
+An idea is for every production $\mathcal{P} \to a_{1}a_{2}a_{3} \dots a_{n}$ where $a_i \in N \cup T$ create productions for all tails of the right-hand side i.e. the productions created from $Q_0$ are.
 \begin{gather*}
-    A_{1} \to a_{1}a_{2}a_{3} \dots a_{n} \qquad A_{2} \to a_{2}a_{3} \dots a_{n} \qquad A_{3} \to a_{3} \dots a_{n} \qquad A_{n} \to  a_{n}
+    A_{0} \to a_{1}a_{2}a_{3} \dots a_{n} \qquad A_{0} \to a_{2}a_{3} \dots a_{n} \qquad A_{3} \to a_{3} \dots a_{n} \qquad A_{n} \to  a_{n}
 \end{gather*}
 Then for all new productions created from each existing production create a new starting nonterminal $S'$ which has all productions that leads to any nonterminal i.e.
 \begin{align*}

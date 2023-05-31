@@ -20,3 +20,8 @@ For step 3. (a) $\BEFORE_q(Y) \alpha$ is interpreted as element-wise concatenati
     \text{step 3. (a):}& \quad u_j \in \text{$\bigcup$}_{\omega \in \BEFORE_q(Y) \alpha} \; \LAST_q(\omega) \\
     \text{step 3. (b):}& \quad  u' \in \text{$\bigcup$}_{\omega \in \BEFORE_q(Y) \delta} \; \LAST_q(\omega)
 \end{align*}
+Another assumption made in algorithm 8 is when $G'$ is defined.
+\begin{center}
+    ``$G' = (N \cup {S'}, T \cup \{\vdash, \dashv\}, P \cup \{S' \to \vdash S \dashv\}, S')$''
+\end{center}
+It is assumed that $N, T$ or $P$ now refers to the sets with which includes the elements they are unionized with. Since if not then Step 3. (a) would result in the empty set in the first iteration.

@@ -37,10 +37,46 @@
   Contextuals=Alternate  % Activate the calt feature
 ]
 
+% This was taken from https://github.com/diku-dk/futhark/blob/master/tools/futhark-listings.tex.
+\lstdefinelanguage{futhark}
+{
+  % list of keywords
+  morekeywords={
+    do,
+    else,
+    for,
+    if,
+    in,
+    include,
+    let,
+    loop,
+    then,
+    type,
+    val,
+    while,
+    with,
+    module,
+    def,
+    entry,
+    local,
+    open,
+    import,
+    assert,
+    match,
+    case,
+  },
+  sensitive=true, % Keywords are case sensitive.
+  morecomment=[l]{--}, % l is for line comment.
+  morestring=[b]" % Strings are enclosed in double quotes.
+}
+
 \lstset{
-  language=C++,
+  language=futhark,
   style=FiraCodeStyle,   % Use predefined FiraCodeStyle
-  basicstyle=\ttfamily   % Use \ttfamily for source code listings
+  numbers=left,                 
+  numbersep=5pt,
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
 }
 \patchcmd{\section}{\bfseries}{\bfseries\boldmath }{}{}
 \patchcmd{\subsection}{\bfseries}{\bfseries\boldmath }{}{}
@@ -51,8 +87,10 @@
   urlcolor=blue,
   citecolor=red,
   menucolor=black,
-  }
-  
+}
+
+\renewcommand{\UrlFont}{\ttfamily\footnotesize}
+
 \newcommand\LL{\text{LL}}
 \newcommand\LLP{\text{LLP}}
 \newcommand\PSLS{\text{PSLS}}
@@ -125,11 +163,11 @@
 \subsection{LLP collection of item sets}
 \input{sections/implementation/llp_collection.tex}
 
+% \subsection{Admissible Pairs}
+% \input{sections/implementation/admissible_pairs.tex}
+
 \subsection{Parser}
 \input{sections/implementation/parser.tex}
-
-\subsection{Admissible Pairs}
-\input{sections/implementation/admissible_pairs.tex}
 
 \section{Testing}
 \subsection{First and Follow sets}
