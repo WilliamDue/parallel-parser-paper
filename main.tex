@@ -30,6 +30,7 @@
 \usepackage{lstfiracode} % https://ctan.org/pkg/lstfiracode
 \usepackage{biblatex}
 \usepackage{csquotes}
+\usepackage{titlesec}
 
 \addbibresource{bibliography.bib}
 
@@ -109,6 +110,11 @@
 \newtheorem{example}{Example}[section]
 \DeclareMathOperator{\sign}{sign}
 
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
 \fancyhf{}
 \setlength{\headheight}{14.49998pt}
 \pretitle{\vspace{-120pt}\begin{center}}
@@ -142,6 +148,7 @@
 \section{Introduction}
 
 \section{Theory}
+
 \subsection{\texorpdfstring{$\LL(k)$}{TEXT} Parser Generator}
 \input{sections/theory/ll.tex}
 
@@ -163,15 +170,16 @@
 \subsection{LLP collection of item sets}
 \input{sections/implementation/llp_collection.tex}
 
-% \subsection{Admissible Pairs}
-% \input{sections/implementation/admissible_pairs.tex}
-
 \subsection{Parser}
 \input{sections/implementation/parser.tex}
 
 \section{Testing}
 \subsection{First and Follow sets}
 \input{sections/testing/first_follow.tex}
+
+\subsection{\texorpdfstring{$\LL(k)$}{TEXT}}
+\input{sections/testing/ll.tex}
+
 
 \subsection{\texorpdfstring{$\LLP(q,k)$}{TEXT}}
 \input{sections/testing/llp.tex}

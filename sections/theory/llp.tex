@@ -1,5 +1,5 @@
 \subsubsection{The idea}
-The idea of the $\LLP(q, k)$ grammar class comes from wanting to create a $\LL(k)$ like grammar class which can be parsed in parallel. To describe how this is done a definition for a given state during $\LL(k)$ parsing is needed.
+The idea of the $\LLP(q, k)$ grammar class comes from wanting to create a $\LL(k)$ like grammar class which can be parsed in parallel. To describe how this is done a definition for a given state during $\LL(k)$ parsing is needed. First a definition for production sequences is needed.
 
 \begin{definition}[Production sequence]
     \label{def:production-sequence}
@@ -8,6 +8,7 @@ The idea of the $\LLP(q, k)$ grammar class comes from wanting to create a $\LL(k
         \mathcal{S} = \{(a_k)_{k=0}^n : n \in \mathbb{N}, a_k \in \mathcal{I}\}
     \end{align*}
 \end{definition}
+\noindent This definition can now be used to define a given state of a $LL(k)$ parser. 
 
 \begin{definition}[LL parser configuration]
     \label{def:ll-configuration}
@@ -17,7 +18,15 @@ The idea of the $\LLP(q, k)$ grammar class comes from wanting to create a $\LL(k
     \end{align*}
     For a $\LL(k)$ parser configuration $(w, \alpha, \pi)$ would $w$ denote the input string, $\alpha$ denote the push down store and $\pi$ denote the sequence of rules used to derive the consumed input string.
 \end{definition}
-\noindent When using deterministic $\LL(k)$ parsing you want to create a parsing function $\phi: T^* \to \mathcal{S}$ for a grammar $G = (N, T, P, S)$. This parser function is a function which is able to create the production sequence as defined by the relation $\vdash^*$ \cite[6]{Vagner2007}.
+\noindent When using deterministic $\LL(k)$ parsing you want to create a parsing function $\phi: T^* \to \mathcal{S}$ for a grammar $G = (N, T, P, S)$. This parser function is a function which is able to create the production sequence as defined by the relation $\vdash^*$ \cite[6]{Vagner2007}. This relation denotes if a 
+\begin{gather*}
+    (w, \alpha, \pi) \vdash (\bar{w}, \bar{\alpha}, \bar{\pi}) \\
+    \iff \\
+    w = a\bar{w} = a\bar{\alpha} = \alpha \\
+    \lor \\
+    \exists A \to \delta \in N \implies  \alpha = A\omega \land \delta\omega = \bar{\alpha}
+\end{gather*}
+
 \begin{align*}
     \phi(w) = \pi \text{ where } (w, S, (\;)) \vdash^* (\epsilon, \epsilon, \pi) 
 \end{align*}

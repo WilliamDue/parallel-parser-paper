@@ -1,5 +1,18 @@
-The algorithms related to parsing and construction of $\LLP(q, k)$ are tested. Some precomputed examples from the LLP paper \cite{Vagner2007} are used to test that each algorithm arrives at the correct result. This is because there is not really any easy way of implementing the PSLS definition. The second problem is computing the LLP Item collection by hand would be quite a daunting task. Therefore, the LLP collection in example 11. \cite[14]{Vagner2007} and the PSLS table in example 12. \cite[14]{Vagner2007} is used to assert correctness. These two tests helps in directing the correctness of the LLP collection and PSLS table generation but does not help with asserting the correctness of the parser.
+To assert the parser generators works as intended integrations tests with property based testing. Some small hard coded tests which are used to help debugger for larger problems. Besides these tests there are also the property based tests which are meant as a way to guarantee the parser generator works as intended.
 
-To assert the validity of the parser, the grammar in example 11. \cite[14]{Vagner2007} is once again used. It has epsilon productions and nonterminals in a row, so it still seems like a good choice for testing the parser on a smaller scale. To do this the $\LLP(q, k)$ parser with $q, k \in {1, 2, 3}$ are constructed resulting in nine parsers. These parsers are tested by constructing all leftmost derivable strings of a given length and testing if the parsers can parse all these strings. The parsers are all tested on all strings of a given length which are not leftmost derivable strings and should fail on all these strings.
+\subsubsection{Hard coded tests}
+Some precomputed examples from the LLP paper \cite{Vagner2007} are used to test that each algorithm arrives at the correct result. This is because there is not really any easy way of implementing the PSLS definition. The second problem is computing the LLP Item collection by hand would be quite a daunting task. Therefore, the LLP collection in example 11. \cite[14]{Vagner2007} and the PSLS table in example 12. \cite[14]{Vagner2007}.
 
-All of these tests are parsed, and therefore it is assumed that the parser works as intended.
+Another test starts by constructing nine $\LLP(q, k)$ parsers where $q, k \in {1, 2, 3}$ using the grammar in example 11. \cite[14]{Vagner2007}. To do this the are constructed resulting in nine parsers. These parsers are tested by constructing all leftmost derivable strings of a given length and testing if the parsers can parse all these strings. The parsers are all tested on all strings of a given length which are not leftmost derivable strings and should fail on all these strings. These parsers are also tests against a single string to check if a hard coded production sequence can be reproduced.
+
+\subsubsection{Property based testing}
+For the property based testing random $\LLP(q,k)$ grammars will be needed. These are found by creating random grammars and checking if the parser generator will create a parser.
+
+\paragraph{Stuck testing}
+The first kind of property to test for is if the parser generator is able to get stuck in an infinite loop. This will be needed to be tested for since the parser generator uses fixed point iterations. To get an idea if the parser generator gets stuck 1000 $\LLP(1, 1)$ grammars and generated and their parsers are created. These grammars are randomly generated and have three terminals, three nonterminals and six productions. If not all of these parsers are created within 5 hours then it is assumed the parser generator can get stuck.
+
+\paragraph{Parsing testing}
+The property tested for is if an arbitrary $\LLP(q,k)$ parser is able to parse leftmost derivable strings of a given length and fail on any other string. Besides this the productions sequence computed also needs to match the sequence used to derive the string that is being parsed.
+
+These tests are done for 50 $\LLP(1,1)$, 50 $\LLP(2,2)$ and 50 $\LLP(3,3)$ grammars. Where the leftmost derivable strings are of length 20 or less and not leftmost derivable string are of length 6 or less.
+ 

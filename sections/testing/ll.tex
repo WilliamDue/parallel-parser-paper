@@ -1,0 +1,5 @@
+To test the $\LL(k)$ parser, integration tests with some property based testing is used. The integration testing comes in the form of ensuring that when using the first and follow-set functions result in a parser that can give the correct sequence of productions.
+
+One of the integration tests are creating $\LL(k)$ parsers with $k \in \{1, \dots, 5\}$ for a grammar \cite[45]{Mogensen} found in ``Introduction to Compiler Design''. Then a parsable string is parsed with a known production sequence. This is done to check if the parser can parse strings correctly. This is the only test done which check for correct sequences. A better test would have been to compute the sequence order of every derivable string and see if the parser produces the same sequence.
+
+The property based test only checks for if every leftmost derivable string of a given length will result in a sequence. And every string that is not left most derivable will result in an error. 

@@ -1,6 +1,10 @@
 When the parser generator has created a table, this table will be needed to be represented as code Futhark somehow. And a way of Glueing the configurations in Futhark will be needed. These problems will be answered in this section.
 \subsubsection{String Packing}
-The first problem is how do we represent strings within Futhark. Futhark does not have dynamic arrays and is not able to represent arrays of different lengths in an array. This is because Futhark needs to be able to know how much memory will be allocated. The reason this is a problem is the function \lstinline|key_to_config| in the parser acts as a table lookup which returns the corresponding LLP configuration. These LLP configuration may result in differently sized pushdown stores or number of productions $(\alpha, \omega, \pi)$. And since \lstinline|key_to_config| is mapped over an array of $(x,y)$ input pairs this will result in the Futhark compiler not knowing how much memory needs to be allocated. This is also a problem since in the parser generator terminals and nonterminals are string, so they may have different lengths.
+The first problem is how do we represent strings within Futhark. Futhark does not have dynamic arrays and is not able to represent arrays of different lengths in an array. This is because Futhark needs to be able to know how much memory will be allocated. The reason this is a problem is the function \lstinline|key_to_config| in the parser acts as a table lookup which returns the corresponding LLP configuration. These LLP configuration may result in differently sized pushdown stores or number of productions $(\alpha, \omega, \pi)$.
+
+This is actually not completely true since instead of using the LLP configuration $(\alpha, \omega, \pi)$ as is, the list homomorphism in algorithm 18 \cite[18]{Vagner2007} which results in the tuples $(RBR(\alpha)LBR(\omega^R), \pi)$ besides for the starting pairs $(\epsilon, \vdash w)$ where $w \in T^*$ which becomes $(LBR(\omega^R), \pi)$. This is done such that step 2. from Algorithm 18 \cite[18]{Vagner2007} can be precomputed.
+
+Since \lstinline|key_to_config| is mapped over an array of $(x,y)$ input pairs this will result in the Futhark compiler not knowing how much memory needs to be allocated. This is also a problem since in the parser generator terminals and nonterminals are string, so they may have different lengths.
 
 To solve this problem string padding can be used, the way this is done when dealing with terminal string every terminal is assigned an index $i \in \{0, 1, \dots, |T| - 1\}$ where $|T| - 1 < 2^{32} - 1$. This is because the largest 32-bit value of $2^{32} - 1$ is used as string padding. When dealing with a sequence of production then the indexes $i \in \{0, 1, \dots, |P| - 1\}$ where $|P| - 1 < 2^{32} - 1$ for the same reason as terminal strings. When a string is made of nonterminals and terminal then each nonterminals are assigned an index from $i \in \{|T| - 1, |T|, |N| + |T| - 1\}$ where $2^{32} - 1 \leq i \leq 2^{64} - 1$. This is done since instead of assigning a specific integer as being padding the non-recursive sum types from Futhark can be used. This is a good choice since they are already used to label an element on the pushdown store is a \lstinline|#left| or \lstinline|#right| bracket.
 
@@ -19,20 +23,14 @@ def key_to_config (key : ((u32), (u32))) : maybe ([]bracket, []u32) =
     case ((4294967295), (0)) -> #just ([#left 1, #left 5], [0])
     case _ -> #nothing
 \end{lstlisting}
-This table function above arises from the following grammar where each subscript correspond to the integers.
+The returned configurations are inside a \lstinline|Maybe|-like type. So if at any point \lstinline|#nothing| is returned then an invalid string pair was returned and therefore $(x,y)$ was not an admissable pair. This table function above arises from the following grammar where each subscript correspond to the integers.
 \begin{align*}
-    0. \: S'_0 \to \vdash_0 A_1 \dashv_1 \quad 1. \: A_1 \to a_2 A_1 \quad 2. \: A_1 \to b_3 \quad 3. \: A_1 \to \epsilon
+    0. \: S'_0 \to \vdash_0 A_1 \dashv_1 \qquad 1. \: A_1 \to a_2 A_1 \qquad 2. \: A_1 \to b_3 \qquad 3. \: A_1 \to \epsilon
 \end{align*}
 
 \subsubsection{Bracket Matching}
-It is important to mention these configurations in \lstinline|key_to_config| do not actually correspond to an LLP configuration. Instead of using the LLP configuration $(\alpha, \omega, \pi)$ as is, the list homomorphism in algorithm 18 \cite[18]{Vagner2007} which results in the tuples $(RBR(\alpha)LBR(\omega^R), \pi)$ besides for the starting pairs $(\epsilon, \vdash w)$ where $w \in T^*$ which becomes $(LBR(\omega^R), \pi)$.
-
-Another thing to note is the returned configurations are inside a \lstinline|Maybe|-like type. So if at any point \lstinline|#nothing| is returned then an invalid string pair was returned and therefore $(x,y)$ was not an admissable pair.
-
-Besides this the Futhark implementation matches algorithm 18. A missing piece is the parallel bracket matching which is not described in the paper. The implementation used takes a lot of inspiration from the implementation described on the Futhark \cite{futhark:parens}. The differences are the balancing check is made before the grading and the tabulation is never done.
+Besides this the Futhark implementation matches algorithm 18. A missing piece is the parallel bracket matching which is not described in the paper. The implementation used takes a lot of inspiration from the implementation described on the Futhark \cite{futhark:parens}. The differences are a balancing check is made before the grading and the tabulation is never done. Instead, simply checking if the index pairs $(2i, 2i + 1)$ are the same types of brackets.
 
 Something to note is the glue \cite[7]{Vagner2007} reduce could have been used instead of algorithm 18 \cite[18]{Vagner2007}. This is a bad choice for two reasons, the first is it is slow \cite[17]{Vagner2007}. The second reason is Futhark does not have dynamic arrays and does not allow for using concatenation when using the built-in \lstinline|reduce| function.
-
-It is also important to note that creating an array of strings in Futhark is also problematic task. Therefore, the terminals, nonterminals and productions are assigned an index which is used instead. Besides this a specific integer is used to assign an empty terminal or nonterminal since a function in Futhark can not return arrays of different lengths. These empty symbols are filtered away later on.
 
 \subsubsection{Complexity}
