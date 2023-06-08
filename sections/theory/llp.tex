@@ -19,7 +19,7 @@ Where $i \in \mathbb{N}$ denotes the index of where the start of the substring $
 After all the $x, y$ pairs have been constructed $\Phi$ is mapped over alle the pairs. The idea is now to check if the configuration besides each other $((\omega, \alpha, \pi), i)$ and $((\bar{\omega}, \bar{\alpha}, \bar{\pi}), i + 1)$ describes matches on $\alpha$ and $\bar{\omega}$. This is done using the associative $\mathbf{glue}$ binary operation described in detail in the LLP paper \cite[7]{Vagner2007} or using Algorithm 18 \cite[18]{Vagner2007}. This description will suffice for the theory needed to explain the important parts of LLP paper \cite{Vagner2007} in relation to this paper.
 
 \subsubsection{The PSLS definition}
-To construct $\Phi$ function Algorithm 8, 9 and 13 \cite[13, 15]{Vagner2007} can be used where Algorithm 13 results in the final table which is $\Phi$. There is just the problem that Algorithm 8 is believed to have a mistake by the author of this paper. This is due to Definition 6 \cite[12]{Vagner2007} which is the definition of the PSLS function.
+To construct $\Phi$ function Algorithm 8, 9 and 13 \cite[13, 15]{Vagner2007} can be used where Algorithm 13 results in the final table which is $\Phi$. There is just the problem that Algorithm 8 have a mistake. This is due to Definition 6 \cite[12]{Vagner2007} which is the definition of the PSLS function.
 
 The function $\PSLS: T^* \times T^* \to \mathbb{P}((N \cup T)^*)$ is a function that finds the Prefix of Suffix of Leftmost Sentential form for a pair of string $(x, y)$. This function is able to determine the initial push down store $\omega$ in an LLP configuration $(\omega, \alpha, \pi)$ for the pair $(x, y)$.
 
