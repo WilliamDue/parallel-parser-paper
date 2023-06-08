@@ -1,4 +1,7 @@
-For the construction of a $\LLP(q,k)$ parser generator the construction of first and follow-set \cite[5]{Vagner2007} and a $\LL(k)$ parser generator is needed. In this section a short explanation of the construction of constructing these sets will be given. This is because during the research of this project $k = 1$ was quite often explained but never $k > 1$ since this was often seen as trivial.
+For the construction of a $\LLP(q,k)$ parser generator the construction of first and follow-set \cite[5]{Vagner2007} and a $\LL(k)$ parser generator is needed.
+
+\subsubsection{\texorpdfstring{$\FIRST_k$}{TEXT} and \texorpdfstring{$\FOLLOW_k$}{TEXT}}
+This section a short explanation of the construction of constructing these sets will be given. This is because during the research of this project $k = 1$ was quite often explained but never $k > 1$ since this was often seen as trivial.
 
 The first and follow-set algorithms described takes heavy inspiration from Mogensens book ``Introduction to Compiler Design'' \cite[55-65]{Mogensen} and the parser notes \cite[10-15]{notes:parser} by Sestoft and Larsen. The modifications are mainly using the $\LL(k)$ extension described in the Wikipedia article in the section ``Constructing an LL(k) parsing table''\footnote{At the time of writing the Wikipedia article does have a description of constructing first and follow-sets for $k > 1$. The problem is the algorithm described does not fullfill the definition of first and follow-sets that is being used in the LLP paper \cite[5]{Vagner2007}.} \cite{wiki:LL_parser}.
 
@@ -71,3 +74,51 @@ Using $\FIRST_k$ and $\FOLLOW_k$ a $\LL(k)$ table which maps nonterminals on the
     \end{gather*}
 \end{definition}
 \noindent If for a given grammar it holds that $|\tau(A, s)| = 1$ for all $(A, s) \in N \times T^*$ then the grammar has no table conflicts.
+
+\subsubsection{LL Parsing}
+To describe how this is done a definition for a given state during $\LL(k)$ parsing is needed. First a definition for production sequences is needed.
+
+\begin{definition}[Production sequence]
+    \label{def:production-sequence}
+    Let $G = (N, T, P, S)$ be a context-free grammar where each production $p_i \in P$ is assigned a unique integer $i \in \{0, ..., |P| - 1\} = \mathcal{I}$. Then the set of every valid and invalid sequence of productions $\mathcal{S}$\footnote{It is chosen to use a squence for the ``prefix of  a left parse'' \cite[5]{Vagner2007} because it seemed like a better choice then the grammar notation.} is given by.
+    \begin{align*}
+        \mathcal{S} = \{(a_k)_{k=0}^n : n \in \mathbb{N}, a_k \in \mathcal{I}\}
+    \end{align*}
+\end{definition}
+\noindent This definition can now be used to define a given state of a $\LL(k)$ parser. 
+
+\begin{definition}[LL parser configuration]
+    \label{def:ll-configuration}
+    Let $G = (N, T, P, S)$ be a context-free grammar that is an $\LL(k)$ grammar for some $k \in \mathbb{Z}_+$. A given configuration \cite[p. 5]{Vagner2007} of a $\LL(k)$ parser is then given by.
+    \begin{align*}
+        (w, \alpha, \pi) \in T^* \times (T \cup N)^* \times \mathcal{S}
+    \end{align*}
+    For a $\LL(k)$ parser configuration $(w, \alpha, \pi)$ would $w$ denote the input string, $\alpha$ denote the push down store and $\pi$ denote the sequence of rules used to derive the consumed input string.
+\end{definition}
+\noindent When using deterministic $\LL(k)$ parsing you want to create a parsing function. To define how such a function is created the parsing relation is defined. This relation holds if the left LL configuration can turn into the right LL configuration after parsing the left configuration.
+\begin{gather*}
+    (w, \alpha, \pi) \vdash (\bar{w}, \bar{\alpha}, \bar{\pi}) \\
+    \iff \\
+    \underbrace{(a \in T \land w = a\bar{w} = a\bar{\alpha} = \alpha \land \pi = \bar{\pi})}_{\text{Pop condition}} \\
+    \lor \\
+    \underbrace{\left(\alpha = A\omega \land \tau(A, \FIRST_k(w)) = i \land p_i = A \to \delta \land \delta\omega = \bar{\alpha} \land \pi i = \bar{\pi} \land w = \bar{w}\right)}_{\text{Deriving condition}}
+\end{gather*}
+The pop condition holds if the left configuration has an input string and a push down store with the same first terminal which is popped in the right configuration.
+
+The deriving condition holds if the left LL configuration push down store $\alpha$ has a first element that is a nonterminal $A$. If the nonterminal together with the lookahead string results in a valid production index. Where the right-hand side of the production is on top of the push down store on the right.
+
+It is a possibility this definition does not match the definition in the paper fully \cite[6]{Vagner2007}. This is related to the notation used in Algorithm 13 \cite[15]{Vagner2007} which could be a mistake or a different notation, this will be discussed later. Besides for this problem the relation will correspond to a single state during LL parsing.
+
+This relation is expanded upon by introducing the relation $\vdash^*$ which is reflexive and transitive, therefore the relation may hold if.
+\begin{gather*}
+    (w, \alpha, \pi) \vdash^* (w, \alpha, \pi)
+\end{gather*}
+Or the relation may hold if.
+\begin{gather*}
+    (w_1, \alpha_1, \pi_1) \vdash^*  (w_n, \alpha_n, \pi_n) \\ \iff \\ (w_1, \alpha_1, \pi_1) \vdash (w_2, \alpha_2, \pi_2) \vdash \dots \vdash (w_n, \alpha_n, \pi_n)
+\end{gather*}
+The relation holds if and only if any of these condition are fufilled. This parsing relation can be used to define the following parsing function $\phi: T^* \to \mathcal{S}$.
+\begin{align*}
+    \phi(w) = \pi \text{ where } (w, S, (\;)) \vdash^* (\epsilon, \epsilon, \pi) 
+\end{align*}
+If the $\vdash^*$ relation does not hold then $w$ can not be parsed. 

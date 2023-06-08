@@ -1,6 +1,6 @@
 To assert the parser generators works as intended integrations tests with property based testing. Some small hard coded tests which are used to help debugger for larger problems. Besides these tests there are also the property based tests which are meant as a way to guarantee the parser generator works as intended.
 
-\subsubsection{Hard coded tests}
+\subsubsection{Unit tests}
 Some precomputed examples from the LLP paper \cite{Vagner2007} are used to test that each algorithm arrives at the correct result. This is because there is not really any easy way of implementing the PSLS definition. The second problem is computing the LLP Item collection by hand would be quite a daunting task. Therefore, the LLP collection in example 11. \cite[14]{Vagner2007} and the PSLS table in example 12. \cite[14]{Vagner2007}.
 
 Another test starts by constructing nine $\LLP(q, k)$ parsers where $q, k \in {1, 2, 3}$ using the grammar in example 11. \cite[14]{Vagner2007}. To do this the are constructed resulting in nine parsers. These parsers are tested by constructing all leftmost derivable strings of a given length and testing if the parsers can parse all these strings. The parsers are all tested on all strings of a given length which are not leftmost derivable strings and should fail on all these strings. These parsers are also tests against a single string to check if a hard coded production sequence can be reproduced.

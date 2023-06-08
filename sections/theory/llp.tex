@@ -1,44 +1,5 @@
-\subsubsection{The idea}
-The idea of the $\LLP(q, k)$ grammar class comes from wanting to create a $\LL(k)$ like grammar class which can be parsed in parallel. To describe how this is done a definition for a given state during $\LL(k)$ parsing is needed. First a definition for production sequences is needed.
-
-\begin{definition}[Production sequence]
-    \label{def:production-sequence}
-    Let $G = (N, T, P, S)$ be a context-free grammar where each production $p_i \in P$ is assigned a unique integer $i \in \{0, ..., |P| - 1\} = \mathcal{I}$. Then the set of every valid and invalid sequence of productions $\mathcal{S}$\footnote{It is chosen to use a squence for the ``prefix of  a left parse'' \cite[5]{Vagner2007} because it seemed like a better choice then the grammar notation.} is given by.
-    \begin{align*}
-        \mathcal{S} = \{(a_k)_{k=0}^n : n \in \mathbb{N}, a_k \in \mathcal{I}\}
-    \end{align*}
-\end{definition}
-\noindent This definition can now be used to define a given state of a $LL(k)$ parser. 
-
-\begin{definition}[LL parser configuration]
-    \label{def:ll-configuration}
-    Let $G = (N, T, P, S)$ be a context-free grammar that is an $\LL(k)$ grammar for some $k \in \mathbb{Z}_+$. A given configuration \cite[p. 5]{Vagner2007} of a $\LL(k)$ parser is then given by.
-    \begin{align*}
-        (w, \alpha, \pi) \in T^* \times (T \cup N)^* \times \mathcal{S}
-    \end{align*}
-    For a $\LL(k)$ parser configuration $(w, \alpha, \pi)$ would $w$ denote the input string, $\alpha$ denote the push down store and $\pi$ denote the sequence of rules used to derive the consumed input string.
-\end{definition}
-\noindent When using deterministic $\LL(k)$ parsing you want to create a parsing function $\phi: T^* \to \mathcal{S}$ for a grammar $G = (N, T, P, S)$. This parser function is a function which is able to create the production sequence as defined by the relation $\vdash^*$ \cite[6]{Vagner2007}. This relation denotes if a 
-\begin{gather*}
-    (w, \alpha, \pi) \vdash (\bar{w}, \bar{\alpha}, \bar{\pi}) \\
-    \iff \\
-    w = a\bar{w} = a\bar{\alpha} = \alpha \\
-    \lor \\
-    \exists A \to \delta \in N \implies  \alpha = A\omega \land \delta\omega = \bar{\alpha}
-\end{gather*}
-
-\begin{align*}
-    \phi(w) = \pi \text{ where } (w, S, (\;)) \vdash^* (\epsilon, \epsilon, \pi) 
-\end{align*}
-If the $\vdash^*$ relation does not hold then $w$ can not be parsed. 
-
-The concept of deterministic $\LLP(q,k)$ parsing is if a string $w \in T^*$ is going to be parsed then construct every pair such that.
-\begin{align*}
-    M =&\; \{((x, y), i) : w = \delta xy_i \beta, |x| = q, |y_i| = k\} \\
-    \cup&\; \{((x, y), i) : w = xy_i \beta, |x| \leq q, |y| = k\} \\
-    \cup&\; \{((x, y), i) : w = \delta xy_i, |x| = q, |y| \leq k\}
-\end{align*}
-Where $i \in \mathbb{N}$ denotes the index of where the start of the substring $y_i$ such the ordering can be kept. Then we would want to create table lookup function $\Phi: T^* \times T^* \to (T \cup N)^* \times (T \cup N)^* \times \mathcal{S}$. This function maps the pairs $(x,y)$ to a triplet $(\omega, \alpha, \pi)$ which is much the same as the configuration described in definition \ref{def:ll-configuration}. 
+\subsubsection{LLP parsing}
+The idea of the $\LLP(q, k)$ grammar class comes from wanting to create a $\LL(k)$ like grammar class which can be parsed in parallel. To do this a definition for a LLP configuration will be needed.
 \begin{definition}[LLP parser configuration]
     \label{def:llp-configuration}
     Let $G = (N, T, P, S)$ be a context-free grammar that is a $\LLP(q, k)$ grammar for some $q, k \in \mathbb{Z}_+$. Let $(x, y)$ be a pair such that $xy$ occurs as a substring in $\mathcal{L}(G)$, $x \in T^{*q}$, $y \in T^{*k}$. If $\PSLS(x,y) = \{\omega\}$ the pair $(x, y)$ has the following LLP configuration.
@@ -47,12 +8,81 @@ Where $i \in \mathbb{N}$ denotes the index of where the start of the substring $
     \end{align*}
     Where $\omega$ is the initial push down store, $\alpha$ is the final push down store after parsing $(y, \omega, (\;)) = (vw, \omega, (\;)) \vdash^* (w, \alpha, \pi)$, $v \in T$, $w \in T^*$ and $\pi$ are the resulting productions.
 \end{definition}
-\noindent After all the $x, y$ pairs have been constructed they are glued together to determined if the resulting triplet is $(S, \epsilon, \pi)$ meaning the input was parsable. This is described in detail in the LLP paper \cite[7]{Vagner2007}, but this description will be helpful for the rest of the paper.
+\noindent The idea now is you would start off by creating every pair $\mathcal{P}$ that can occur in the given input string. These pairs are defined to be the following.
+\begin{align*}
+    \mathcal{P} =&\; \{((x, y), i) : w = \delta xy_i \beta, |x| = q, |y_i| = k\} \\
+    \cup&\; \{((x, y), i) : w = xy_i \beta, |x| \leq q, |y| = k\} \\
+    \cup&\; \{((x, y), i) : w = \delta xy_i, |x| = q, |y| \leq k\}
+\end{align*}
+Where $i \in \mathbb{N}$ denotes the index of where the start of the substring $y_i$ such the ordering can be kept. Then we would want to create table lookup function $\Phi: T^* \times T^* \to (T \cup N)^* \times (T \cup N)^* \times \mathcal{S}$. This function maps the pairs $(x,y)$ to a triplet $(\omega, \alpha, \pi)$ which is much the same as the configuration described in definition \ref{def:ll-configuration}. 
+
+After all the $x, y$ pairs have been constructed $\Phi$ is mapped over alle the pairs. The idea is now to check if the configuration besides each other $((\omega, \alpha, \pi), i)$ and $((\bar{\omega}, \bar{\alpha}, \bar{\pi}), i + 1)$ describes matches on $\alpha$ and $\bar{\omega}$. This is done using the associative $\mathbf{glue}$ binary operation described in detail in the LLP paper \cite[7]{Vagner2007} or using Algorithm 18 \cite[18]{Vagner2007}. This description will suffice for the theory needed to explain the important parts of LLP paper \cite{Vagner2007} in relation to this paper.
+
+\subsubsection{The PSLS definition}
+To construct $\Phi$ function Algorithm 8, 9 and 13 \cite[13, 15]{Vagner2007} can be used where Algorithm 13 results in the final table which is $\Phi$. There is just the problem that Algorithm 8 is believed to have a mistake by the author of this paper. This is due to Definition 6 \cite[12]{Vagner2007} which is the definition of the PSLS function.
+
+The function $\PSLS: T^* \times T^* \to \mathbb{P}((N \cup T)^*)$ is a function that finds the Prefix of Suffix of Leftmost Sentential form for a pair of string $(x, y)$. This function is able to determine the initial push down store $\omega$ in an LLP configuration $(\omega, \alpha, \pi)$ for the pair $(x, y)$.
+
+The trouble occurs when considering the following $\LL(2)$ grammar.
+Let $G = (S', \{\vdash, \dashv, a\} \{S', S, A\}, P)$ be an augmented grammar where $P$ is a set of the following productions. 
+\begin{align*}
+    0)\:\: S' \to \: \vdash S \dashv \qquad 1)\:\: A \to \epsilon \qquad 2)\:\: S \to aAa \qquad 3)\:\: A \to a
+\end{align*}
+The augmentation comes from Algorithm 8 and introduces production 0. If you now were to use the definition from the paper as it is you would arrive at the following PSLS table.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c}
+        & $\dashv$ & $a\dashv$ & $aa$ \\ \hline
+        $\vdash$ & & & $\{S\}$ \\\hline
+        $\vdash a$ & & $\{A\}$ & $\{A\}$ \\\hline
+        $aa$ & $\dashv$ & $\{a\}$ & 
+    \end{tabular}
+    \caption{The computed PSLS table using the original PSLS definition.}
+\end{table}
+\noindent To construct the table function that maps admissible pairs to LLP configuration $\Phi$ Algorithm 13 will be needed. This Algorithm needs a $\LL(k)$ parser so the following $\LL(2)$ table is constructed.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c}
+        & $\vdash a$ & $aa$ & $a\dashv$ \\ \hline
+        $S'$ & $S' \to \: \vdash S \dashv$ & & \\\hline
+        $S$ & & $S \to aAa$ & \\\hline
+        $A$ & & $A \to a$ & $A \to \epsilon$
+    \end{tabular}
+    \caption{The $LL(2)$ parsing table.}
+\end{table}
+\noindent The trouble you run into is if you want to create the LLP configuration from $A$ which has the table keys $(\vdash a,a \dashv)$. Then Algorithm 13 states that you need to parse the first symbol of the lookahead string $a \dashv$ to obtain the final push down store and the production sequence. But when you try to parse $(a \dashv, A, ())$ then you get $(a \dashv, A, ()) \vdash (a \dashv, \epsilon, 1)$ due to the parser table. Because of this you would never be able to parse the first symbol and algorithm 13 would fail.
+
+This can be fixed by changing the PSLS definition that it is dependent on $k$ meaning it could be called $\PSLS_k$ instead. The dependency would result in $\FIRST_k$ being used instead of $\FIRST_1$. And Algorithm 8 would be changed when solving for the shortest prefix such that.
+\begin{center}
+    step 3. (a): $\gamma$ is the shortest prefix of $X\delta$ such that $\gamma \Rightarrow^* v_j \omega$. 
+\end{center}
+Using the new definition would result in the following PSLS table.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c}
+        & $\dashv$ & $a\dashv$ & $aa$ \\ \hline
+        $\vdash$ & & & $S$ \\\hline
+        $\vdash a$ & & $Aa\dashv$ & $Aa$ \\\hline
+        $aa$ & $\dashv$ & $a\dashv$ & 
+    \end{tabular}
+    \caption{The computed PSLS table using the new PSLS definition.}
+\end{table}
+\noindent Using the new definition to create the LLP configuration from $Aa\dashv$ which has the table keys $(\vdash a,a \dashv)$ would now succeed. This is due to when parsing $(a \dashv, Aa\dashv, ())$ then you get $(a \dashv, Aa\dashv, ()) \vdash (a \dashv, a\dashv, 1) \vdash ( \dashv, \dashv, 1)$ due to the parser table.
+
+This changed definition would still work for $\LLP$ parsing. The difference now is the initial push down store found via $\PSLS$ is now guaranteed to be able to derive the lookahead.
+
+It is important to note that the argument needs some assumptions. Before these assumptions will be accounted for a typo in Algorithm 13 will be cleared up. This typo is the push down store and input string is switched in the 3-tuple because of the definition in the LLP paper \cite[5]{Vagner2007}.
+
+The assumption is in Algorithm 13 uses implicitly the lookahead in the LL configuration. This is assumed since only one symbol is in the input string of the LL configuration. If the lookahead is not accounted for then $LL(1)$ parsing would only be possible. This is a reasonable assumption since the paper says the following about their parallel LL parsing method.
+\begin{center}
+    ``The method is not universal because only a subset of $\LL(k)$ grammars can be deterministically parsed in this way.'' \cite[2]{Vagner2007}
+\end{center}
+If Algorithm 13 only used $\LL(1)$ then it would be true the method is a subset of $\LL(k)$. It would then had been more precise to write their method only works for a subset of $\LL(1)$. Therefore, it is assumed that $\LL(k)$ parsing is meant to be used in Algorithm 13. Because of this assumption the example shown here with the original PSLS definition will fail.
 
 \subsubsection{Determining if a grammar is LLP}
-When dealing with a $\LL(k)$ parser a common answer to if the grammar is a $\LL(k)$ grammar is: if the $LL(k)$ parser table can be constructed then it is a $\LL(k)$ grammar. The same goes for $\LLP(q,k)$ grammars, that is a grammar is a $\LLP(q,k)$ if the $\LLP(q, k)$ table can be constructed.
+When dealing with a $\LL(k)$ parser a common answer to if the grammar is a $\LL(k)$ grammar is: if the $\LL(k)$ parser can be constructed then it is a $\LL(k)$ grammar. The same goes for $\LLP(q,k)$ grammars, that is a grammar is a $\LLP(q,k)$ if the $\LLP(q, k)$ parser can be constructed.
 
-The first step in determining if a grammar is a $\LLP(q,k)$ grammar is if it is in the LL grammar class. This is because the LLP parser uses the LL parser to construct the table, therefore the class suffers from the same limitations. The next step is to determine if the $(x, y)$ pair leads to multiple $(\omega, \alpha, \pi)$ LLP configurations. This is what definition 10 \cite[13]{Vagner2007} is used for, to determine if the grammar is LLP.
+The first step in determining if a grammar is a $\LLP(q,k)$ grammar is if it is in the $LL(k)$ grammar class. This is because the LLP parser uses the LL parser to construct the table, therefore the class suffers from the same limitations. The next step is to determine if the $(x, y)$ pair leads to multiple $(\omega, \alpha, \pi)$ LLP configurations. This is what definition 10 \cite[13]{Vagner2007} is used for, to determine if the grammar is LLP.
 
 Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007} values to determine the initial push down stores which can be used to determine the LLP configuration. The trouble is when working with LLP grammars the $\PSLS(x, y)$ definition can be troublesome when trying to understand if a grammar is $\LLP(q, k)$. Therefore, some examples of using the definition are given below.
 
