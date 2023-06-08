@@ -68,7 +68,7 @@ It then holds that $\FOLLOW_k(A) = \mathcal{M}_u(A)$ if $k$ stays fixed for gram
 Using $\FIRST_k$ and $\FOLLOW_k$ a $\LL(k)$ table which maps nonterminals on the stack and the lookahead of $k$ terminals to a production index.
 
 \begin{definition}[$\LL(k)$ table]
-    Let $G = (N, T, P, S)$ be a $\LL(k)$ context-free grammar and $\tau : N \times T^* \to \mathbb{P}(\mathbb{N})$. For a given production $A \to \delta = p_i \in P$ where $i \in \{0, ..., |P| - 1\}$.
+    Let $G = (N, T, P, S)$ be a $\LL(k)$ context-free grammar and $\tau : N \times T^* \to \mathbb{P}(\mathbb{N})$. For a given production $A \to \delta = p_i \in P$ where $i \in \{0, ..., |P| - 1\}$ is a unique index.
     \begin{gather*}
         i \in \tau(A, s) \text{ where } s \in \FIRST_k(\delta) \odot_k \FOLLOW_k(A)
     \end{gather*}

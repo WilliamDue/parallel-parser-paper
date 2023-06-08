@@ -61,19 +61,19 @@ Using the new definition would result in the following PSLS table.
     \centering
     \begin{tabular}{c|c|c|c}
         & $\dashv$ & $a\dashv$ & $aa$ \\ \hline
-        $\vdash$ & & & $S$ \\\hline
-        $\vdash a$ & & $Aa\dashv$ & $Aa$ \\\hline
-        $aa$ & $\dashv$ & $a\dashv$ & 
+        $\vdash$ & & & $\{S\}$ \\\hline
+        $\vdash a$ & & $\{Aa\dashv\}$ & $\{Aa\}$ \\\hline
+        $aa$ & $\{\dashv\}$ & $\{a\dashv\}$ & 
     \end{tabular}
     \caption{The computed PSLS table using the new PSLS definition.}
 \end{table}
 \noindent Using the new definition to create the LLP configuration from $Aa\dashv$ which has the table keys $(\vdash a,a \dashv)$ would now succeed. This is due to when parsing $(a \dashv, Aa\dashv, ())$ then you get $(a \dashv, Aa\dashv, ()) \vdash (a \dashv, a\dashv, 1) \vdash ( \dashv, \dashv, 1)$ due to the parser table.
 
-This changed definition would still work for $\LLP$ parsing. The difference now is the initial push down store found via $\PSLS$ is now guaranteed to be able to derive the lookahead.
+This changed definition would still work for $\LLP$ parsing. The difference is the initial push down store found via $\PSLS$ is now guaranteed to be able to parse the first symbol of the lookahead.
 
 It is important to note that the argument needs some assumptions. Before these assumptions will be accounted for a typo in Algorithm 13 will be cleared up. This typo is the push down store and input string is switched in the 3-tuple because of the definition in the LLP paper \cite[5]{Vagner2007}.
 
-The assumption is in Algorithm 13 uses implicitly the lookahead in the LL configuration. This is assumed since only one symbol is in the input string of the LL configuration. If the lookahead is not accounted for then $LL(1)$ parsing would only be possible. This is a reasonable assumption since the paper says the following about their parallel LL parsing method.
+The assumption is in Algorithm 13 uses implicitly the lookahead in the LL configuration. This is assumed since only one symbol is in the input string of the LL configuration. If the lookahead is not accounted for then $\LL(1)$ parsing would only be possible. This is a reasonable assumption since the paper says the following about their parallel LL parsing method.
 \begin{center}
     ``The method is not universal because only a subset of $\LL(k)$ grammars can be deterministically parsed in this way.'' \cite[2]{Vagner2007}
 \end{center}
@@ -100,7 +100,7 @@ Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007}
     \begin{align*}
         A \Rightarrow_{lm}^* (abb)^*A \Rightarrow (abb)^*ab_xb_yB \Rightarrow^* (abb)^*ab_xb_yB
     \end{align*}
-    Since $\FIRST_1(b) = \{b\}$ then $b \in \PSLS(b, b)$ by definition. The initial push down store for the admissible pair $(b, b)$ is $\PSLS(b, b) = \{b, B\}$. Therefore, by Definition 10 \cite[13]{Vagner2007} this grammar is not $\LLP(1, 1)$. If one were to check for all admissible pairs then they would find that $\PSLS(b,b)$ is the only problem. If one wishes to parse the grammar a $LLP(2, 1)$ parser can be used. It solves the ambiguities since $\PSLS(ab, b) = \{b\}$ and $\PSLS(bb, b) = \{B\}$.
+    Since $\FIRST_1(b) = \{b\}$ then $b \in \PSLS(b, b)$ by definition. The initial push down store for the admissible pair $(b, b)$ is $\PSLS(b, b) = \{b, B\}$. Therefore, by Definition 10 \cite[13]{Vagner2007} this grammar is not $\LLP(1, 1)$. If one were to check for all admissible pairs then they would find that $\PSLS(b,b)$ is the only problem. If one wishes to parse the grammar a $\LLP(2, 1)$ parser can be used. It solves the ambiguities since $\PSLS(ab, b) = \{b\}$ and $\PSLS(bb, b) = \{B\}$.
 \end{example}
 
 \begin{example}
