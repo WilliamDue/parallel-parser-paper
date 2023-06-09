@@ -2,20 +2,20 @@ At times the notation of the LLP paper \cite{Vagner2007} was unknown to the auth
 
 \textbf{Algorithm 8} \cite[13]{Vagner2007} has the following notation.
 \begin{align*}
-    \text{step 2. (a):}& \quad \text{``}\{[S' \to \vdash S \dashv \textbf{.}, u, \epsilon, \epsilon]\}, u = \LAST_q(\vdash S \dashv)\text{''} \\
-    \text{step 3. (b):}& \quad \text{``}\{[Y \to \delta \textbf{.}, u', v, \gamma]\}, u' = \LAST_q(\BEFORE_q(Y)\delta)\text{''}
+    \text{step 2. (a):}& \quad \text{``}\{[S' \to \vdash S \dashv \bigdot , u, \epsilon, \epsilon]\}, u = \LAST_q(\vdash S \dashv)\text{''} \\
+    \text{step 3. (b):}& \quad \text{``}\{[Y \to \delta \bigdot , u', v, \gamma]\}, u' = \LAST_q(\BEFORE_q(Y)\delta)\text{''}
 \end{align*}    
 In the context $u$ and $u'$ are used, they are supposed to be terminal strings. Both of these sets do not result in singletons, so the interpretation cannot be unwrapping them. An example of this is if you compute $u$ with $q=2$ for the Example 11 grammar \cite[14]{Vagner2007}. It is therefore assumed that for each element in the $u$ and $u'$ sets an item is constructed from them i.e.
 \begin{align*}
-    \text{step 2. (a):}& \quad \{[S' \to \vdash S \dashv \textbf{.}, u, \epsilon, \epsilon], u \in \LAST_q(\vdash S \dashv)\} \\
-    \text{step 3. (b):}& \quad \{[Y \to \delta \textbf{.}, u', v, \gamma], u' \in \LAST_q(\BEFORE_q(Y)\delta)\}
+    \text{step 2. (a):}& \quad \{[S' \to \vdash S \dashv \bigdot, u, \epsilon, \epsilon] : u \in \LAST_q(\vdash S \dashv)\} \\
+    \text{step 3. (b):}& \quad \{[Y \to \delta \bigdot , u', v, \gamma] : u' \in \LAST_q(\BEFORE_q(Y)\delta)\}
 \end{align*}
 The second type of notation in Algorithm 8 is.
 \begin{align*}
     \text{step 3. (a):}& \quad \text{``} u_j \in \LAST_q(\BEFORE_q(Y) \alpha)\text{''} \\
     \text{step 3. (b):}& \quad \text{``} u' = \LAST_q(\BEFORE_q(Y)\delta)\text{''}
 \end{align*}    
-For step 3. (a) $\BEFORE_q(Y) \alpha$ is interpreted as element-wise concatenation of $\alpha$ on the back of each string in $\BEFORE_q(Y)$. Since this results in a set and $\LAST_q: (N \cup T)^* \to \mathbb{P}(T^*)$ then it is assumed that $\LAST_q$ is used element-wise on the set $\BEFORE_q(Y) \alpha$. This would intern mean $u_j$ is a set, therefore it is also assumed that union is implicitly used. The same idea goes for step 3. (b) since from before it was assumed that it should be interpreted as $\{[Y \to \delta \textbf{.}, u', v, \gamma], u' \in \LAST_q(\BEFORE_q(Y)\delta)\}$. Therefore, these two steps should be interpreted as.
+For step 3. (a) $\BEFORE_q(Y) \alpha$ is interpreted as element-wise concatenation of $\alpha$ on the back of each string in $\BEFORE_q(Y)$. Since this results in a set and $\LAST_q: (N \cup T)^* \to \mathbb{P}(T^*)$ then it is assumed that $\LAST_q$ is used element-wise on the set $\BEFORE_q(Y) \alpha$. This would intern mean $u_j$ is a set, therefore it is also assumed that union is implicitly used. The same idea goes for step 3. (b) since from before it was assumed that it should be interpreted as $\{[Y \to \delta \bigdot , u', v, \gamma] : u' \in \LAST_q(\BEFORE_q(Y)\delta)\}$. Therefore, these two steps should be interpreted as.
 \begin{align*}
     \text{step 3. (a):}& \quad u_j \in \text{$\bigcup$}_{\omega \in \BEFORE_q(Y) \alpha} \; \LAST_q(\omega) \\
     \text{step 3. (b):}& \quad  u' \in \text{$\bigcup$}_{\omega \in \BEFORE_q(Y) \delta} \; \LAST_q(\omega)
@@ -25,3 +25,5 @@ Another assumption made in algorithm 8 is when $G'$ is defined.
     ``$G' = (N \cup {S'}, T \cup \{\vdash, \dashv\}, P \cup \{S' \to \vdash S \dashv\}, S')$''
 \end{center}
 It is assumed that $N, T$ or $P$ now refers to the sets with which includes the elements they are unionized with. Since if not then Step 3. (a) would result in the empty set in the first iteration.
+
+In Example 12 \cite[14]{Vagner2007} the tuple in the set $E_2$ should be $T \to [\bigdot E]$.

@@ -52,19 +52,18 @@ The augmentation comes from Algorithm 8 and introduces production 0. If you now 
 \end{table}
 \noindent The trouble you run into is if you want to create the LLP configuration from $A$ which has the table keys $(\vdash a,a \dashv)$. Then Algorithm 13 states that you need to parse the first symbol of the lookahead string $a \dashv$ to obtain the final push down store and the production sequence. But when you try to parse $(a \dashv, A, ())$ then you get $(a \dashv, A, ()) \vdash (a \dashv, \epsilon, 1)$ due to the parser table. Because of this you would never be able to parse the first symbol and algorithm 13 would fail.
 
-This can be fixed by changing the PSLS definition that it is dependent on $k$ meaning it could be called $\PSLS_k$ instead. The dependency would result in $\FIRST_k$ being used instead of $\FIRST_1$.
+This can be fixed by changing the PSLS definition that it is dependent on $k$ meaning it could be called $\PSLS_k$ instead. The dependency would result in $\FIRST_k$ being used instead of $\FIRST_1$\footnote{There are some changes made besides these which are mentioned in section \ref{sec:assumptions}.}.
 \begin{definition}[$\PSLS_k$]
     Let $G = (N, T, P, S)$ be a context-free grammar. The function $\PSLS_k(x, y)$ for a pair of strings $x, y \in T^*$ is defined as follows:
     \begin{align*}
         \PSLS_k(x, y) = \{ & \alpha : \exists S \Rightarrow^*_{lm} wuA\beta \Rightarrow wxB\gamma \Rightarrow^* wxy\delta, \\
         & w, u \in T^* A, B \in N, \alpha, \beta \gamma, \gamma \in (N \cup T)^*, u \neq x, \\
-        & \alpha \text{ is the shortest prefix of } B\gamma \\
-        & \text{such that } y \in \FIRST_k(\alpha) \} \\
+        & \alpha \text{ is the shortest prefix of } B\gamma \text{ such that } y \in \FIRST_k(\alpha) \} \\
         \cup \: \{ & y : \exists S \Rightarrow^* wuA\beta \Rightarrow wxa\gamma \Rightarrow wxy\delta, \\
         & a = \FIRST_1(y), w,u \in T^*, \beta, \gamma, \delta \in (N \cup T)^*, u \neq x \}
     \end{align*}
 \end{definition}
-And Algorithm 8 would be changed when solving for the shortest prefix such that.
+\noindent And Algorithm 8 would be changed when solving for the shortest prefix such that.
 \begin{algorithm}[Construction of a collection of sets of $\LLP(q, k)$ items.]
     Input: A context-free grammar $G = (N, T, P, S)$ that is $\LL(k)$. Ouput: A collection $C$ of sets of $\LLP(q, k)$ items for $G$.
     \begin{enumerate}
@@ -75,16 +74,18 @@ And Algorithm 8 would be changed when solving for the shortest prefix such that.
         where $S'$ is a new nonterminal symbol and $\vdash, \dashv$ are new terminal symbols.
         \item The initial set of $\LLP(q, k)$ items is constructed as follows:
         \begin{enumerate}
-            \item $D_0 := \{[S' \to \: \vdash S \dashv \text{{\Huge .}} ] : u \in \LAST_q(\vdash S \dashv) \}$
+            \item $D_0 := \{[S' \to \: \vdash S \dashv \bigdot  ] : u \in \LAST_q(\vdash S \dashv) \}$
             \item $C := \{D_0\}$
         \end{enumerate}
         \item If a set of $\LLP(q, k)$ items has been constructed, then a new set $D_j$ is constructed
         for each symbol $X \in N' \cup T'$ standing just before the dot in $D_i$. The set $D_j$ is constructed as follows:
         \begin{enumerate}
-            \item $D_j := \{[Y \to \alpha\text{{\Huge .}}X \beta, u_j, v_j, \gamma] : [Y \to aX\text{{\Huge .}}\beta, u_i, v_i, \delta] \in D_i, u_j \in \left(\bigcup_{\omega \in \BEFORE_q(Y) \alpha} \LAST_q(\omega) \right), v_j \in \FIRST_k(Xv_i), \gamma$ is the shortests prefix of $X\delta$ such that $y \in \FIRST_k(\gamma)\}$
-            \item 
+            \item $D_j := \{[Y \to \alpha\bigdot X \beta, u_j, v_j, \gamma] : [Y \to aX\bigdot\beta, u_i, v_i, \delta] \in D_i, u_j \in \bigcup_{\omega \in \BEFORE_q(Y) \alpha} \LAST_q(\omega), v_j \in \FIRST_k(Xv_i), \gamma$ is the shortests prefix of $X\delta$ such that $y \in \FIRST_k(\gamma)\}$.
+            \item If $[X \to \alpha Y\bigdot \beta, u, v,\gamma] \in D_j, Y \in N'$ and $Y \to \delta \in P'$, then $D_j := D_j \cup \{[Y \to \delta \bigdot , u', v, \gamma] : u' \in \bigcup_{\omega \in \BEFORE_q(Y) \delta} \LAST_q(\omega)\}$.
+            \item Repeat step (3b) till no new item can be added into $D_j$.
+            \item $C := C \cup \{D_j\}$
         \end{enumerate}
-
+        \item Repeat step (3) for all created sets till no new set can be added into $C$.
     \end{enumerate}
 \end{algorithm}
 Using the new definition would result in the following PSLS table.

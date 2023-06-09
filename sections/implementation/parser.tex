@@ -29,8 +29,25 @@ The returned configurations are inside a \lstinline|Maybe|-like type. So if at a
 \end{align*}
 
 \subsubsection{Bracket Matching}
-Besides this the Futhark implementation matches algorithm 18. A missing piece is the parallel bracket matching which is not described in the paper. The implementation used takes a lot of inspiration from the implementation described on the Futhark \cite{futhark:parens}. The differences are a balancing check is made before the grading and the tabulation is never done. Instead, simply checking if the index pairs $(2i, 2i + 1)$ are the same types of brackets.
+Besides this the Futhark implementation matches algorithm 18. A missing piece is the parallel bracket matching which is not described in the paper. The implementation used takes a lot of inspiration from the implementation described on the Futhark \cite{futhark:parens}. The differences are a balancing check is made as can be seen below.
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def depths [n] (input : [n]bracket) : maybe ([n]i64) =
+    let left_brackets =
+      input
+      |> map (is_left)
+    let bracket_scan =
+      left_brackets
+      |> map (\b -> if b then 1 else -1)
+      |> scan (+) 0
+    let result =
+      bracket_scan
+      |> map2 (\a b -> b - i64.bool a) left_brackets
+    in if any (<0) bracket_scan || last bracket_scan != 0
+    then #nothing
+    else #just result
+\end{lstlisting}
+This is done using \lstinline|bracket_scan| which must only contain positive values and the last value must be zero. If these predicates are not fulfilled then it is known the brackets are not balanced. The returned result is the \lstinline|bracket_scan| returned such that it is adjusted for the left brackets being one then the right. Here the non-recursive sum-type from Futhark are utilized once again where \lstinline|#nothing| is returned if an error occurs.
 
 Something to note is the glue \cite[7]{Vagner2007} reduce could have been used instead of algorithm 18 \cite[18]{Vagner2007}. This is a bad choice for two reasons, the first is it is slow \cite[17]{Vagner2007}. The second reason is Futhark does not have dynamic arrays and does not allow for using concatenation when using the built-in \lstinline|reduce| function.
 
-\subsubsection{Complexity}
+Assuming the number of processes used is the number of terminals then the $\LLP(q, k)$ parsing algorithm using bracket matching is $O(\log n)$ where $n$ is the number of terminals in the input string \cite[19]{Vagner2007}.
