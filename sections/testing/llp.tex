@@ -1,18 +1,35 @@
-To assert the parser generators works as intended integrations tests with property based testing. Some small hard coded tests which are used to help debugger for larger problems. Besides these tests there are also the property based tests which are meant as a way to guarantee the parser generator works as intended.
+To assert the parser generators works as intended, integration tests with property based testing is used. And some small hard coded tests are used to help debug for larger problems. Besides these tests there are also the property based tests which are meant as a way to guarantee the parser generator works as intended.
 
 \subsubsection{Unit tests}
-Some precomputed examples from the LLP paper \cite{Vagner2007} are used to test that each algorithm arrives at the correct result. This is because there is not really any easy way of implementing the PSLS definition. The second problem is computing the LLP Item collection by hand would be quite a daunting task. Therefore, the LLP collection in example 11. \cite[14]{Vagner2007} and the PSLS table in example 12. \cite[14]{Vagner2007}.
+Some precomputed examples from the LLP paper \cite{Vagner2007} are used to test that each algorithm arrives at the correct result. This is because there is not really any easy way of implementing the PSLS definition. The second problem is, that computing the LLP item collection by hand can be quite a daunting task. Therefore, the LLP collection in Example 11 \cite[14]{Vagner2007} and the PSLS table in Example 12 \cite[14]{Vagner2007}.
 
-Another test starts by constructing nine $\LLP(q, k)$ parsers where $q, k \in {1, 2, 3}$ using the grammar in example 11. \cite[14]{Vagner2007}. To do this the are constructed resulting in nine parsers. These parsers are tested by constructing all leftmost derivable strings of a given length and testing if the parsers can parse all these strings. The parsers are all tested on all strings of a given length which are not leftmost derivable strings and should fail on all these strings. These parsers are also tests against a single string to check if a hard coded production sequence can be reproduced.
+Another test starts by constructing nine $\LLP(q, k)$ parsers where $q, k \in {1, 2, 3}$ using the grammar in Example 11 \cite[14]{Vagner2007}. These parsers are tested by constructing all leftmost derivable strings of a given length and testing if the parsers can parse all these strings. The parsers are all tested on all strings of a given length which are not leftmost derivable strings and should fail on all these strings. These parsers are also tested against a single string to check if a hard coded production sequence can be reproduced.
 
 \subsubsection{Property based testing}
-For the property based testing random $\LLP(q,k)$ grammars will be needed. These are found by creating random grammars and checking if the parser generator will create a parser.
+For the property based testing, random $\LLP(q,k)$ grammars will be needed. These are found by creating random grammars and checking if the parser generator will create a parser.
 
 \paragraph{Stuck testing}
-The first kind of property to test for is if the parser generator is able to get stuck in an infinite loop. This will be needed to be tested for since the parser generator uses fixed point iterations. To get an idea if the parser generator gets stuck 1000 $\LLP(1, 1)$ grammars and generated and their parsers are created. These grammars are randomly generated and have three terminals, three nonterminals and six productions. If not all of these parsers are created within 5 hours then it is assumed the parser generator can get stuck.
+The first kind of property to test for, is if the parser generator is able to get stuck in an infinite loop. This will need to be tested for since the parser generator uses fixed point iterations. To get an idea if the parser generator gets stuck one thousand $\LLP(1, 1)$ grammars are generated and their parsers are created. These grammars are randomly generated and have three terminals, three nonterminals and six productions. If all of these parsers are not created within 5 hours, then it is assumed the parser generator can get stuck.
 
 \paragraph{Parsing testing}
 The property tested for is if an arbitrary $\LLP(q,k)$ parser is able to parse leftmost derivable strings of a given length and fail on any other string. Besides this the productions sequence computed also needs to match the sequence used to derive the string that is being parsed.
 
-These tests are done for 50 $\LLP(1,1)$, 50 $\LLP(2,2)$ and 50 $\LLP(3,3)$ grammars. Where the leftmost derivable strings are of length 20 or less and not leftmost derivable string are of length 6 or less.
- 
+This property would translate to let $G = (N, T, P, S)$ be a $\LLP(q, k)$ grammar, $\varphi : T^* \to \mathcal{S}$ be a $\LL(k)$ parser and $\Pi : T^* \to \mathcal{S}$ be a $\LLP(q, k)$ parser. These parser functions generate the production sequence if the input can be parsed else the empty sequence is produced. The property tested for is then\footnote{$S \Rightarrow^*_{lm} s$ means all leftmost derivable strings from the start of the grammar. $\Rightarrow^*_{lm}$ allows only for left derivations and is reflexive and transitive.}.
+\begin{align*}
+    \forall s \in T^* : S \Rightarrow^*_{lm} s \land \Pi(s) = \varphi(s)
+\end{align*}
+These tests are done for 50 random $\LLP(1,1)$ grammars, 50 $\LLP(2,2)$ and 50 $\LLP(3,3)$ grammars. Where the leftmost derivable strings are of length 20 or less and not leftmost derivable string are of length 6 or less.
+
+\paragraph{Problems with this method}
+The LLP grammars are generated by rejecting grammars if they are not $\LL(k)$, or they just have a single common left factor. Or if the grammar is able to derive two consecutive nonterminals that the same and nullable. The concern is then if almost every grammar just gets rejected. When generating random grammars with three terminals, three nonterminals and six productions with a right-hand side with a length of at max three. And the three of the productions must use the nonterminals as their left-hand side. Because of this the grammars are not uniformly distributed, but they are more likely to be useful. Using these specifications we see the following percentage of random grammars are accepted.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c}
+        Lookback & Lookahead & Acceptance Percentage  \\ \hline
+        1 & 1 & 7.46\%  \\\hline
+        2 & 2 & 9.43\%  \\\hline
+        3 & 3 & 10.40\%
+    \end{tabular}
+    \caption{The percent of grammars accepted when trying to generate 1000 $\LLP(q, k)$ grammars.}
+\end{table}
+\noindent As one can see when increasing the lookback and lookahead more grammars are accepted which is expected due to the grammar class becoming larger. It is assumed that the tests are working as expected because it does not seem like that many grammars gets rejected.

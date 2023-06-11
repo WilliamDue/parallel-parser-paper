@@ -1,27 +1,29 @@
 \subsubsection{LLP parsing}
-The idea of the $\LLP(q, k)$ grammar class comes from wanting to create a $\LL(k)$ like grammar class which can be parsed in parallel. To do this a definition for a LLP configuration will be needed.
+The idea of the $\LLP(q, k)$ grammar class comes from wanting to create a $\LL(k)$ like grammar class, which can be parsed in parallel. To do this a definition for a LLP configuration will be needed.
 \begin{definition}[LLP parser configuration]
     \label{def:llp-configuration}
     Let $G = (N, T, P, S)$ be a context-free grammar that is a $\LLP(q, k)$ grammar for some $q, k \in \mathbb{Z}_+$. Let $(x, y)$ be a pair such that $xy$ occurs as a substring in $\mathcal{L}(G)$, $x \in T^{*q}$, $y \in T^{*k}$. If $\PSLS(x,y) = \{\omega\}$ the pair $(x, y)$ has the following LLP configuration.
     \begin{align*}
         (\omega, \alpha, \pi) \in (T \cup N)^* \times (T \cup N)^* \times \mathcal{S}
     \end{align*}
-    Where $\omega$ is the initial push down store, $\alpha$ is the final push down store after parsing $(y, \omega, (\;)) = (vw, \omega, (\;)) \vdash^* (w, \alpha, \pi)$, $v \in T$, $w \in T^*$ and $\pi$ are the resulting productions.
+    Where $\omega$ is the initial pushdown store, $\alpha$ is the final pushdown store after parsing $(y, \omega, (\;)) = (vw, \omega, (\;)) \vdash^* (w, \alpha, \pi)$, $v \in T$, $w \in T^*$ and $\pi$ are the resulting productions.
 \end{definition}
-\noindent The idea now is you would start off by creating every pair $\mathcal{P}$ that can occur in the given input string. These pairs are defined to be the following.
+\noindent The idea now is, that you would start off by creating every pair $\mathcal{P}$ that can occur in the given input string. These pairs are defined to be the following.
 \begin{align*}
     \mathcal{P} =&\; \{((x, y), i) : w = \delta xy_i \beta, |x| = q, |y_i| = k\} \\
     \cup&\; \{((x, y), i) : w = xy_i \beta, |x| \leq q, |y| = k\} \\
     \cup&\; \{((x, y), i) : w = \delta xy_i, |x| = q, |y| \leq k\}
 \end{align*}
-Where $i \in \mathbb{N}$ denotes the index of where the start of the substring $y_i$ such the ordering can be kept. Then we would want to create table lookup function $\Phi: T^* \times T^* \to (T \cup N)^* \times (T \cup N)^* \times \mathcal{S}$. This function maps the pairs $(x,y)$ to a triplet $(\omega, \alpha, \pi)$ which is much the same as the configuration described in definition \ref{def:ll-configuration}. 
+Where $i \in \mathbb{N}$ denotes the index of where the start of the substring $y_i$ starts, this $i$ is used such that the ordering can be kept. Then we would want to create a table look up function $\Phi: T^* \times T^* \to (T \cup N)^* \times (T \cup N)^* \times \mathcal{S}$. This function maps the pairs $(x,y)$ to a triplet $(\omega, \alpha, \pi)$ which is much the same as the configuration described in definition \ref{def:ll-configuration}. 
 
-After all the $x, y$ pairs have been constructed $\Phi$ is mapped over alle the pairs. The idea is now to check if the configuration besides each other $((\omega, \alpha, \pi), i)$ and $((\bar{\omega}, \bar{\alpha}, \bar{\pi}), i + 1)$ describes matches on $\alpha$ and $\bar{\omega}$. This is done using the associative $\mathbf{glue}$ binary operation described in detail in the LLP paper \cite[7]{Vagner2007} or using Algorithm 18 \cite[18]{Vagner2007}. This description will suffice for the theory needed to explain the important parts of LLP paper \cite{Vagner2007} in relation to this paper.
+After all the $x, y$ pairs have been constructed $\Phi$ is mapped over all the pairs. The idea is now to check if the configuration besides each other $((\omega, \alpha, \pi), i)$ and $((\bar{\omega}, \bar{\alpha}, \bar{\pi}), i + 1)$ describes matches on $\alpha$ and $\bar{\omega}$. This is done using the associative $\mathbf{glue}$ binary operation described in detail in the LLP paper \cite[7]{Vagner2007} or using Algorithm 18 \cite[18]{Vagner2007}. Using $\mathbf{glue}$ you can do a parallel reduce since it is associative.
+
+This description will suffice for the theory needed to explain the important parts of the LLP paper \cite{Vagner2007} in relation to this paper.
 
 \subsubsection{The PSLS definition}
 To construct $\Phi$ function Algorithm 8, 9 and 13 \cite[13, 15]{Vagner2007} can be used where Algorithm 13 results in the final table which is $\Phi$. There is just the problem that Algorithm 8 have a mistake. This is due to Definition 6 \cite[12]{Vagner2007} which is the definition of the PSLS function.
 
-The function $\PSLS: T^* \times T^* \to \mathbb{P}((N \cup T)^*)$ is a function that finds the Prefix of Suffix of Leftmost Sentential form for a pair of string $(x, y)$. This function is able to determine the initial push down store $\omega$ in an LLP configuration $(\omega, \alpha, \pi)$ for the pair $(x, y)$.
+The function $\PSLS: T^* \times T^* \to \mathbb{P}((N \cup T)^*)$ is a function that finds the Prefix of Suffix of Leftmost Sentential form for a pair of string $(x, y)$. This function is able to determine the initial pushdown store $\omega$ in an LLP configuration $(\omega, \alpha, \pi)$ for the pair $(x, y)$.
 
 The trouble occurs when considering the following $\LL(2)$ grammar.
 Let $G = (S', \{\vdash, \dashv, a\} \{S', S, A\}, P)$ be an augmented grammar where $P$ is a set of the following productions. 
@@ -50,7 +52,7 @@ The augmentation comes from Algorithm 8 and introduces production 0. If you now 
     \end{tabular}
     \caption{The $LL(2)$ parsing table.}
 \end{table}
-\noindent The trouble you run into is if you want to create the LLP configuration from $A$ which has the table keys $(\vdash a,a \dashv)$. Then Algorithm 13 states that you need to parse the first symbol of the lookahead string $a \dashv$ to obtain the final push down store and the production sequence. But when you try to parse $(a \dashv, A, ())$ then you get $(a \dashv, A, ()) \vdash (a \dashv, \epsilon, 1)$ due to the parser table. Because of this you would never be able to parse the first symbol and algorithm 13 would fail.
+\noindent The trouble you run into is if you want to create the LLP configuration from $A$ which has the table keys $(\vdash a,a \dashv)$. Then Algorithm 13 states that you need to parse the first symbol of the lookahead string $a \dashv$ to obtain the final pushdown store and the production sequence. But when you try to parse $(a \dashv, A, ())$ then you get $(a \dashv, A, ()) \vdash (a \dashv, \epsilon, 1)$ due to the parser table. Because of this you would never be able to parse the first symbol and algorithm 13 would fail.
 
 This can be fixed by changing the PSLS definition that it is dependent on $k$ meaning it could be called $\PSLS_k$ instead. The dependency would result in $\FIRST_k$ being used instead of $\FIRST_1$\footnote{There are some changes made besides these which are mentioned in section \ref{sec:assumptions}.}.
 \begin{definition}[$\PSLS_k$]
@@ -101,9 +103,9 @@ Using the new definition would result in the following PSLS table.
 \end{table}
 \noindent Using the new definition to create the LLP configuration from $Aa\dashv$ which has the table keys $(\vdash a,a \dashv)$ would now succeed. This is due to when parsing $(a \dashv, Aa\dashv, ())$ then you get $(a \dashv, Aa\dashv, ()) \vdash (a \dashv, a\dashv, 1) \vdash ( \dashv, \dashv, 1)$ due to the parser table.
 
-This changed definition would still work for $\LLP$ parsing. The difference is the initial push down store found via $\PSLS$ is now guaranteed to be able to parse the first symbol of the lookahead.
+This changed definition would still work for $\LLP$ parsing. The difference is the initial pushdown store found via $\PSLS$ is now guaranteed to be able to parse the first symbol of the lookahead.
 
-It is important to note that the argument needs some assumptions. Before these assumptions will be accounted for a typo in Algorithm 13 will be cleared up. This typo is the push down store and input string is switched in the 3-tuple because of the definition in the LLP paper \cite[5]{Vagner2007}.
+It is important to note that the argument needs some assumptions. Before these assumptions will be accounted for a typo in Algorithm 13 will be cleared up. This typo is the pushdown store and input string is switched in the 3-tuple because of the definition in the LLP paper \cite[5]{Vagner2007}.
 
 The assumption is in Algorithm 13 uses implicitly the lookahead in the LL configuration. This is assumed since only one symbol is in the input string of the LL configuration. If the lookahead is not accounted for then $\LL(1)$ parsing would only be possible. This is a reasonable assumption since the paper says the following about their parallel LL parsing method.
 \begin{center}
@@ -111,12 +113,46 @@ The assumption is in Algorithm 13 uses implicitly the lookahead in the LL config
 \end{center}
 If Algorithm 13 only used $\LL(1)$ then it would be true the method is a subset of $\LL(k)$. It would then had been more precise to write their method only works for a subset of $\LL(1)$. Therefore, it is assumed that $\LL(k)$ parsing is meant to be used in Algorithm 13. Because of this assumption the example shown here with the original PSLS definition will fail.
 
+\subsubsection{Infinite loop}
+There is an infinite loop in Algorithm 8 \cite[13]{Vagner2007} which will be shown that it can occur in this section. Consider the following augmented grammar.
+\begin{align*}
+    S' \to \: \vdash S \dashv \quad S \to aSA \quad A \to \epsilon \quad S \to b
+\end{align*}
+This grammar is $\LL(1)$, so you should be able to use Algorithm 8 to determine the $\PSLS$ table. If you try to construct the LLP item collection for this grammar with $q = 1$ and $k = 1$ what you find is.
+\begin{align*}
+    D_0 = \{& [S' \to \: \vdash S \dashv\bigdot, \dashv, \epsilon, \epsilon]\} \\
+    D_1 = \{& [A \to \bigdot , b, \dashv, \dashv], [S \to a S A\bigdot , b, \dashv, \dashv], \\
+    & [S \to b\bigdot , b, \dashv, \dashv],[S' \to \vdash S\bigdot \dashv, b, \dashv, \dashv]\} \\
+    & \qquad\qquad\qquad\quad \vdots
+\end{align*}
+The problem will occur due to the tuple $[S \to a S A\bigdot , b, \dashv, \dashv]$. This item will become a singleton set when grouping the set $D_1$ in the start of step 3. In step 3 (a) you are able to create the tuple $[S \to a S\bigdot A, b, \dashv, A \dashv]$. This is due to:
+\begin{align*}
+    & b \in \bigcup_{\omega \in \BEFORE_1(S) aS} \LAST_1(\omega) = \bigcup_{\omega \in \{\vdash aS, aaS\}} \LAST_1(\omega) = \LAST_1(S) = \{b\} \\
+    & \dashv \: \in \FIRST_k(A\dashv) \text{ since } A \Rightarrow^* \epsilon \\
+    & A\dashv \text{ is the shortests prefix of } A\dashv \text{ such that } y \in \FIRST_1(A\dashv)
+\end{align*}
+Because $[S \to a S\bigdot A, b, \dashv, A \dashv]$ occurs, then the production $S \to a S A\bigdot$ also appears in some item in $D_j$ due to step 3 (b). This item has the same prefix and same shortest prefix as $[S \to a S\bigdot A, b, \dashv, A \dashv]$. The suffix $b \in u'$ also exists because. 
+\begin{align*}
+    \bigcup_{\omega \in \BEFORE_1(S) aSA} \LAST_1(\omega) = \bigcup_{\omega \in \{\vdash aSA, aaSA\}} \LAST_1(\omega) = \LAST_1(S) = \{b\}
+\end{align*}
+Because of this $[S \to a SA\bigdot, b, \dashv, A \dashv]$ is a member of the new set $D_j$ which is:
+\begin{align*}
+    \{ &[A \to \bigdot , b, \dashv, A \dashv],[S \to a S\bigdot A, b, \dashv, A \dashv], \\
+    & [S \to a S A\bigdot , b, \dashv, A \dashv],[S \to b\bigdot , b, \dashv, A \dashv]\}
+\end{align*}
+The problem is since the production, suffix and prefix is as the tuple $[S \to a S A\bigdot , b, \dashv, \dashv]$ the almost same item set will be created. The difference is will only be in the shortest prefix since $A$ is prepended to the shortest prefix such that $\dashv$ can be derived. If you compute the next set using $[S \to a S A\bigdot , b, \dashv, A \dashv]$ you will arrive at:
+\begin{align*}
+    \{& [A \to \bigdot , b, \dashv, A A \dashv],[S \to a S\bigdot A, b, \dashv, A A \dashv], \\
+    & [S \to a S A\bigdot , b, \dashv, A A \dashv],[S \to b\bigdot , b, \dashv, A A \dashv]\}
+\end{align*}
+
+
 \subsubsection{Determining if a grammar is LLP}
-When dealing with a $\LL(k)$ parser a common answer to if the grammar is a $\LL(k)$ grammar is: if the $\LL(k)$ parser can be constructed then it is a $\LL(k)$ grammar. The same goes for $\LLP(q,k)$ grammars, that is a grammar is a $\LLP(q,k)$ if the $\LLP(q, k)$ parser can be constructed.
+A common answer to whether or not a grammar is a $\LL(k)$ grammar is: if the $\LL(k)$ parser can be constructed, then it is a $\LL(k)$ grammar. The same goes for $\LLP(q,k)$ grammars. That is, a grammar is a $\LLP(q,k)$ if the $\LLP(q, k)$ parser can be constructed.
 
-The first step in determining if a grammar is a $\LLP(q,k)$ grammar is if it is in the $LL(k)$ grammar class. This is because the LLP parser uses the LL parser to construct the table, therefore the class suffers from the same limitations. The next step is to determine if the $(x, y)$ pair leads to multiple $(\omega, \alpha, \pi)$ LLP configurations. This is what definition 10 \cite[13]{Vagner2007} is used for, to determine if the grammar is LLP.
+The first step in determining if a grammar is a $\LLP(q,k)$ grammar is if it is in the $LL(k)$ grammar class. This is because the LLP parser uses the LL parser to construct the table, therefore the class suffers from the same limitations. The next step is to determine if the $(x, y)$ pair leads to multiple $(\omega, \alpha, \pi)$ LLP configurations. This is what definition 10 \cite[13]{Vagner2007} is used for. To determine if the grammar is LLP.
 
-Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007} values to determine the initial push down stores which can be used to determine the LLP configuration. The trouble is when working with LLP grammars the $\PSLS(x, y)$ definition can be troublesome when trying to understand if a grammar is $\LLP(q, k)$. Therefore, some examples of using the definition are given below.
+Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007} values to determine the initial pushdown stores which can be used to determine the LLP configuration. The trouble when working with LLP grammars the $\PSLS(x, y)$ definition can be troublesome when trying to understand if a grammar is $\LLP(q, k)$. Therefore, some examples of using the definition are given below.
 
 \begin{example}
     \label{ex:llp21}
@@ -124,7 +160,7 @@ Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007}
     \begin{gather*}
         A \to a b b B \qquad B \to b \qquad B \to A
     \end{gather*}
-    It will be checked if the grammar is $\LLP(1, 1)$, when computing $\PSLS(b,b)$ it can be seen there exists the following occurrences of $bb$ which leads to two different initial push down stores.
+    It will be checked if the grammar is $\LLP(1, 1)$, when computing $\PSLS(b,b)$. It can be seen that there exists the following occurrences of $bb$ which leads to two different initial pushdown stores.
     \begin{align*}
         A \Rightarrow_{lm}^* (abb)^*A \Rightarrow (abb)^*abb_xB_{B\gamma} \Rightarrow^* (abb)^*abb_xb_y
     \end{align*}
@@ -132,7 +168,7 @@ Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007}
     \begin{align*}
         A \Rightarrow_{lm}^* (abb)^*A \Rightarrow (abb)^*ab_xb_yB \Rightarrow^* (abb)^*ab_xb_yB
     \end{align*}
-    Since $\FIRST_1(b) = \{b\}$ then $b \in \PSLS(b, b)$ by definition. The initial push down store for the admissible pair $(b, b)$ is $\PSLS(b, b) = \{b, B\}$. Therefore, by Definition 10 \cite[13]{Vagner2007} this grammar is not $\LLP(1, 1)$. If one were to check for all admissible pairs then they would find that $\PSLS(b,b)$ is the only problem. If one wishes to parse the grammar a $\LLP(2, 1)$ parser can be used. It solves the ambiguities since $\PSLS(ab, b) = \{b\}$ and $\PSLS(bb, b) = \{B\}$.
+    Since $\FIRST_1(b) = \{b\}$ then $b \in \PSLS(b, b)$ by definition. The initial pushdown store for the admissible pair $(b, b)$ is $\PSLS(b, b) = \{b, B\}$. Therefore, by Definition 10 \cite[13]{Vagner2007} this grammar is not $\LLP(1, 1)$. If one were to check for all admissible pairs then they would find that $\PSLS(b,b)$ is the only problem pair. If one wishes to parse the grammar a $\LLP(2, 1)$ parser can be used. It solves the ambiguities since $\PSLS(ab, b) = \{b\}$ and $\PSLS(bb, b) = \{B\}$.
 \end{example}
 
 \begin{example}
@@ -140,7 +176,7 @@ Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007}
     \begin{gather*}
         S \to [S] \qquad S \to \epsilon
     \end{gather*}
-    This grammar seems like it is not $\LLP(q, k)$ for any $q, k \geq 1$ because when LL parsing the pairs $([^q, ]^k)$ can lead multiple LL configuration $(]^n, S]^n, \pi)$ where $q + k \leq n$. This grammar is actually a $\LLP(1,1)$ grammar because the LLP parser only uses the shortest prefix of the initial push down store in the LLP configuration. This can be determined as not a problem by using the $\PSLS$ definition.
+    This grammar seems like it is not $\LLP(q, k)$ for any $q, k \geq 1$. When LL parsing the pairs $([^q, ]^k)$ can lead multiple LL configuration $(]^n, S]^n, \pi)$ where $q + k \leq n$. This grammar is actually a $\LLP(1,1)$ grammar because the LLP parser only uses the shortest prefix of the initial pushdown store in the LLP configuration. This can be determined as not a problem by using the $\PSLS$ definition.
     \begin{align*}
         S \Rightarrow_{lm}^* [^nS]^n \Rightarrow [^{n + 1}S]^{n + 1} \Rightarrow^* [^{n + 1}]^{n + 1}
     \end{align*}
@@ -152,7 +188,7 @@ Definition 10 \cite[13]{Vagner2007} uses the $\PSLS(x, y)$ \cite[12]{Vagner2007}
     \begin{gather*}
         S \to aaS \qquad S \to \epsilon
     \end{gather*}
-    This grammar is mentioned in the LLP paper \cite[16]{Vagner2007} as a grammar that is not $\LLP(q,k)$ for any $q, k \in \mathbb{Z}_+$. This is because the pairs $(a^q, a^k)$ could lead to the possible initial push down stores are $\PSLS(a^q, a^k) = \{a, S\}$. This is much the same reason as to why Example \ref{ex:llp21} is not $\LLP(1, 1)$. The trouble with this grammar is even when increasing $q$ or $k$ there is not a symbol that can make $\PSLS(a^q, a^k)$ become a singleton. If the productions for the grammar were.
+    This grammar is mentioned in the LLP paper \cite[16]{Vagner2007} as a grammar that is not $\LLP(q,k)$ for any $q, k \in \mathbb{Z}_+$. This is because the pairs $(a^q, a^k)$, that could lead to the possible initial pushdown stores are $\PSLS(a^q, a^k) = \{a, S\}$. This is much the same reason as to why Example \ref{ex:llp21} is not $\LLP(1, 1)$. The trouble with this grammar is even when increasing $q$ or $k$ there is not a symbol that can make $\PSLS(a^q, a^k)$ become a singleton. If the productions for the grammar were.
     \begin{gather*}
         S \to aS \qquad S \to \epsilon
     \end{gather*}

@@ -4,7 +4,7 @@ When constructing the LLP collection of items sets Algorithm 8 \cite[13]{Vagner2
 \end{center}
 The way this could be solved is by doing a breadth first search (BFS) on all the possible prefixes to see if the $a$ can be derived. Then just choose the shortest of the prefixes that can derive $a\omega$.  The problem here is you would need a condition for stopping the BFS such that it does not try to derive something that can not appear.
 
-An idea is to check if the first symbol of a given derivation has been visited before, if so then skip the derivation. A problem that may occur here is if $X\delta = YYa$ and $Y \Rightarrow^* \epsilon$ then since $Y$ is visited on the second derivation then that path is not further explored. This was at some point the used implementation and was a cause of trouble It was later realized step 3. had a mistake, and it should say something like.
+An idea is to check if the first symbol of a given derivation has been visited before, if so then skip the derivation. A problem that may occur here is if $X\delta = YYa$ and $Y \Rightarrow^* \epsilon$ then since $Y$ is visited on the second derivation then that path is not further explored. This was at some point the used implementation in this project and was a cause of trouble It was later realized step 3. had a mistake, and it should say something like.
 \begin{center}
     step 3. (a): $\gamma$ is the shortest prefix of $X\delta$ such that $\gamma \Rightarrow^* v_j\omega$. 
 \end{center}

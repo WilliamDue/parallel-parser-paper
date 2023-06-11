@@ -92,6 +92,7 @@
 
 \renewcommand{\UrlFont}{\ttfamily\footnotesize}
 
+\newcommand{\truncprod}[1]{\stackrel{\mathclap{#1}}{\bullet}}
 \newcommand\bigdot{\textbf{{\LARGE{.}}}}
 \newcommand\LL{\text{LL}}
 \newcommand\LLP{\text{LLP}}
@@ -143,6 +144,10 @@
 \begin{document}
 \maketitle
 \thispagestyle{firstpage}
+\begin{abstract}
+  ts
+\end{abstract}
+
 \tableofcontents
 
 
@@ -176,7 +181,7 @@
 \input{sections/implementation/parser.tex}
 
 \section{Testing}
-\subsection{First and Follow sets}
+\subsection{FIRST and FOLLOW}
 \input{sections/testing/first_follow.tex}
 
 \subsection{\texorpdfstring{$\LL(k)$}{TEXT}}
