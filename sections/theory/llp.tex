@@ -118,7 +118,7 @@ There is an infinite loop in Algorithm 8 \cite[13]{Vagner2007} which will be sho
 \begin{align*}
     S' \to \: \vdash S \dashv \quad S \to aSA \quad A \to \epsilon \quad S \to b
 \end{align*}
-This grammar is $\LL(1)$, so you should be able to use Algorithm 8 to determine the $\PSLS$ table. If you try to construct the LLP item collection for this grammar with $q = 1$ and $k = 1$ what you find is.
+This grammar is $\LL(1)$, so you should be able to use Algorithm 8 to determine the $\PSLS$ table and therefore determine if it is $\LLP(1, 1)$. If you try to construct the LLP item collection for the given grammar with $q = 1$ and $k = 1$ what you find is.
 \begin{align*}
     D_0 = \{& [S' \to \: \vdash S \dashv\bigdot, \dashv, \epsilon, \epsilon]\} \\
     D_1 = \{& [A \to \bigdot , b, \dashv, \dashv], [S \to a S A\bigdot , b, \dashv, \dashv], \\
@@ -131,7 +131,7 @@ The problem will occur due to the tuple $[S \to a S A\bigdot , b, \dashv, \dashv
     & \dashv \: \in \FIRST_k(A\dashv) \text{ since } A \Rightarrow^* \epsilon \\
     & A\dashv \text{ is the shortests prefix of } A\dashv \text{ such that } y \in \FIRST_1(A\dashv)
 \end{align*}
-Because $[S \to a S\bigdot A, b, \dashv, A \dashv]$ occurs, then the production $S \to a S A\bigdot$ also appears in some item in $D_j$ due to step 3 (b). This item has the same prefix and same shortest prefix as $[S \to a S\bigdot A, b, \dashv, A \dashv]$. The suffix $b \in u'$ also exists because. 
+Because $[S \to a S\bigdot A, b, \dashv, A \dashv]$ occurs, then the production $S \to a S A\bigdot$ also appears in some item in $D_j$ due to step 3 (b). This item has the same prefix and same shortest prefix as $[S \to a S\bigdot A, b, \dashv, A \dashv]$. The suffix $b$ will also appear in the next tuple because. 
 \begin{align*}
     \bigcup_{\omega \in \BEFORE_1(S) aSA} \LAST_1(\omega) = \bigcup_{\omega \in \{\vdash aSA, aaSA\}} \LAST_1(\omega) = \LAST_1(S) = \{b\}
 \end{align*}
@@ -140,12 +140,18 @@ Because of this $[S \to a SA\bigdot, b, \dashv, A \dashv]$ is a member of the ne
     \{ &[A \to \bigdot , b, \dashv, A \dashv],[S \to a S\bigdot A, b, \dashv, A \dashv], \\
     & [S \to a S A\bigdot , b, \dashv, A \dashv],[S \to b\bigdot , b, \dashv, A \dashv]\}
 \end{align*}
-The problem is since the production, suffix and prefix is as the tuple $[S \to a S A\bigdot , b, \dashv, \dashv]$ the almost same item set will be created. The difference is will only be in the shortest prefix since $A$ is prepended to the shortest prefix such that $\dashv$ can be derived. If you compute the next set using $[S \to a S A\bigdot , b, \dashv, A \dashv]$ you will arrive at:
+The problem is since the production, suffix and prefix is the same as the tuple $[S \to a S A\bigdot , b, \dashv, \dashv]$ the same item set will be created but with a different shortest prefix. The new shortest prefix will always be prepended by $A$ such that $\dashv$ can be derived. This results in this computation can be repeated infinitely. If you compute the next set using $[S \to a S A\bigdot , b, \dashv, A \dashv]$ you will arrive at:
 \begin{align*}
     \{& [A \to \bigdot , b, \dashv, A A \dashv],[S \to a S\bigdot A, b, \dashv, A A \dashv], \\
     & [S \to a S A\bigdot , b, \dashv, A A \dashv],[S \to b\bigdot , b, \dashv, A A \dashv]\}
 \end{align*}
+Therefore the item $[S \to a S\bigdot A, b, \dashv, A^* \dashv]$ will appear infinitely many times in different sets. Algorithm 8 only terminates if a fixed point is reached, but his is impossible, so it will not halt.
 
+This algorithm was not fixed in this paper, instead a property check for instead. Let $G = (N, T, P, S)$ a grammar may cause an infinite loop if.
+\begin{align*}
+    \exists \mathcal{N} \in N : \alpha \in (N \cup T)^* \land A \in N \land \mathcal{N} \Rightarrow^* \alpha AA \land A \Rightarrow^* \epsilon
+\end{align*}
+This should not capture the essence of the problem. It is intended as a way to make sure not infinitely many nullable nonterminals are prepended to the shortest prefix.
 
 \subsubsection{Determining if a grammar is LLP}
 A common answer to whether or not a grammar is a $\LL(k)$ grammar is: if the $\LL(k)$ parser can be constructed, then it is a $\LL(k)$ grammar. The same goes for $\LLP(q,k)$ grammars. That is, a grammar is a $\LLP(q,k)$ if the $\LLP(q, k)$ parser can be constructed.
