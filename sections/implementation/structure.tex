@@ -1,10 +1,8 @@
 The parser generator was chosen to be written in Haskell. The reason for doing so is the author likes the language. Another reason is also when dealing with parsing, Haskell seems to be commonly used, so this tool seems to belong in this toolbox.
 
-The generated parser comes in the form of a Futhark source file. The reason for doing so is Futhark is designed for ``parallel efficient computing'' \cite{futhark:homepage} that can be executed on a GPU. This is a good choice since the parser that will be generated is designed for parallel parsing on a GPU. Futhark is also in the ML family which helps with readability and makes it easy for the author to write efficient GPU code. These advantages come in the form of abstractions like non-recursive sum types and pattern matching.
-
-The structure of the parser generator is.
+The generated parser comes in the form of a Futhark source file. The reason for doing so is Futhark is designed for ``parallel efficient computing'' \cite{futhark:homepage} that can be executed on a GPU. This is a good choice since the parser that will be generated is designed for parallel parsing on a GPU. Futhark is also in the ML family which helps with readability and makes it easy for the author to write efficient GPU code. These advantages come in the form of abstractions like non-recursive sum types and pattern matching. The structure of the parser generator is.
 \begin{enumerate}
-    \item Parse a context free grammar.
+    \item Parse a context-free grammar.
     \item If the grammar has common left factors, left recursion, predicate from section \ref{sec:infinite_loop} or the $\LL(k)$ table can not be constructed fail.
     \item Construct PSLS table using Algorithm 9 and the new Algorithm 8 \cite[13]{Vagner2007}.
     \item Use Algorithm 13 \cite[13]{Vagner2007} to construct the $\LLP(q, k)$ table.

@@ -1,6 +1,6 @@
 The $\FIRST$ implementation corresponds to Algorithm \ref{algorithm:first}. The $\LAST$ implementation corresponds to the one mentioned in the LLP paper \cite[12]{Vagner2007}, which uses an existing $\FIRST$ implementation. A big problem with $\FIRST$ is it is extremely expensive because of the truncated product step.
 \begin{align*}
-    \FIRST'_k(\omega, \mathcal{M}) =&\,\, \bigcup_{(\alpha, \beta) \, \in \, \varphi(\omega)} \FIRST'_k(\alpha, \mathcal{M}) \odot_k \FIRST'_k(\beta, \mathcal{M})
+    \FIRST'_k(\omega, \mathcal{M}) =&\,\, \bigcup_{(\alpha, \beta) \, \in \, \varphi(\omega)} \FIRST'_k(\alpha, \mathcal{M}) \truncprod{k} \FIRST'_k(\beta, \mathcal{M})
 \end{align*}
 This inefficiency can be solved by the use of memoization since $\FIRST$ is recursively defined and has overlapping subproblems. In Haskell this can be done using a \lstinline|State| monad from the \lstinline|mtl| library. As an example the difference in performance can be seen in the before\footnote{\texttt{db564853c2fe4cd1c3d2839795738c56dbb209a0} is the SHA of the version without memoization.} and after\footnote{\texttt{daa9d6ff4640ca5683cec1d7956d2aa7ecd89c47} is the SHA of the version with memoization.} tests. In the tests at the time this optimization was made, 25 $\LLP(q,k)$ parsers where $q, k \in \{1, 2, 3, 4, 5\}$, $\FIRST_k$ where $k \in \{1, 2, \dots, 20\}$ and $\FOLLOW_k$ where $k \in \{1, 2, \dots, 7\}$ are generated. All of these functions are also used on some generated input. The difference in performance of using memoization can be seen below. 
 \begin{table}[H]
