@@ -132,8 +132,8 @@
 \title{
     {\Large \textsc{University of Copenhagen}} \\[0pt]
     {\large Computer Science Department} \\[10pt]
-    {\Large Parallel Parsing using Futhark} \\[0pt]
-    {\large *Subtitle*} \\[10pt]
+    {\Large Parallel Parsing using Futhark} \\[4pt]
+    {\large The Implementation of a Parallel LL Parser Generator} \\[10pt]
     Author: William Henrich Due \\[0pt]
     Advisor: Troels Henriksen \\[0pt]
     Submitted: June 12, 2023
@@ -145,14 +145,26 @@
 \maketitle
 \thispagestyle{firstpage}
 \begin{abstract}
-  ts
+\noindent An implementation of a deterministic parallel LL parser generator is presented. This LL parser generator only works for a subset of LL grammars which is known as the grammar class LLP. The implementation details of such a parser generator will be discussed. These details entail the creation of $\LL(k)$ parsers and parallel computing using Futhark. Furthermore, problems with definitions and algorithm stemming from the LLP grammar class will be examined.
 \end{abstract}
 
 \tableofcontents
 
-
 \section{Introduction}
+Parsing is usually a sequential task which can be done using the grammar classes LL, LR or LALR. In the case of LL parsing you would need to keep track of a pushdown store through the parsing. Using this pushdown you can keep track of the context for the given input string from start till the end.
 
+Instead of doing this an idea for a parallel parser is to put some restrictions on the LL grammar class. These restrictions should allow for the parser to look at an arbitrary substring from a grammar and determine if it is valid or not. It should then also be able to compare this specific substring to its neighboring substrings and determine if the given context is valid.
+
+One such grammar class which uses this strategy is the LLP class. The $\LLP(q, k)$ grammar class uses $q$ lookback and $k$ lookahead for determining the substrings sizes.
+
+In this paper a $\LLP(q, k)$ parser will be implemented as mentioned. It is likely this is the first implementation of such a parser. This is due to the papers few citations and the fact that some mistakes have been found the algorithms and definitions mentioned in the paper have been found. It is known there exists a $\LLP(1, 1)$ \cite{voetter2021}, but the problems found are unlikely to appear and one of the problems only appears when $q > 1$ and $k > 1$.
+
+The technologies used to do the implementation is Haskell 2010 using GHC 9.2.7, Cabal 3.10.1.0, Python 3.10 and Futhark nightly. The code base can be found at the link below. \newline
+
+\noindent \href{https://github.com/diku-dk/parallel-parser/releases/tag/BachelorProject}{https://github.com/diku-dk/parallel-parser/releases/tag/BachelorProject}
+
+\paragraph{Acknowledgements}
+Thanks, Troels Henriksen for the immense amount of help throughout this project, and thanks to my sister for helping me proofread.
 
 \section{Theory}
 
@@ -161,7 +173,6 @@
 
 \subsection{\texorpdfstring{$\LLP(q,k)$}{TEXT} Parser Generator}
 \input{sections/theory/llp.tex}
-
 
 \section{Implementation}
 
@@ -192,7 +203,13 @@
 
 
 \section{Conclusion}
+The LLP parser generator works due to it being thoroughly tested using multiple random grammars. It does not work as intended since the parser generator does reject grammars which may be $\LLP(q,k)$ because of the infinite loop check. Nevertheless, the implementation is still acceptable for the author this paper.
 
+Ideally the parser generator is missing a way of constructing the concrete syntax trees. The time for this was never found because a multitude of problems with the theory and implementation of the parser generator. This is most likely due to the author of this paper being inexperience with parsing.
+
+During this project it was also realized that there are two big mistakes in the LLP paper \cite{Vagner2007}. It is believed that the two counter examples shown in this paper should convince a reader that there are mistakes in the algorithms.
+
+The usability of the grammar class $\LLP(q, k)$ is at the moment unknown where $q > 1$ and $k > 1$. It is known a $\LLP(1, 1)$ parser generator can be used for a JSON parser and a small C-like language can be parsed \cite{voetter2021}. These implementations come with limitations, an example is JSON is not $\LLP(1, 1)$ \cite[60]{voetter2021}, so modifications are made such that JSON can be parsed. The hope is that by creating a $\LLP(q, k)$ parser this can help mitigate these limitations.
 
 \printbibliography
 \end{document}

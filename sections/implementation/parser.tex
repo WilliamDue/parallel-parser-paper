@@ -2,7 +2,7 @@ When the parser generator has created a table, this table will need to be repres
 \subsubsection{String Packing}
 The first problem is how do we represent strings within Futhark. Futhark does not have dynamic arrays and is not able to represent arrays of different lengths in an array. This is because Futhark needs to be able to know how much memory will be allocated. The reason, this is a problem, is the function \lstinline|key_to_config| in the parser acts as a table look up which returns the corresponding LLP configuration. These LLP configuration may result in differently sized pushdown stores or number of productions $(\alpha, \omega, \pi)$.
 
-This is actually not completely true since instead of using the LLP configuration $(\alpha, \omega, \pi)$ as is, the list homomorphisms in algorithm 18 \cite[18]{Vagner2007} which results in the tuples $(RBR(\alpha)LBR(\omega^R), \pi)$ besides for the starting pairs $(\epsilon, \vdash w)$ where $w \in T^*$ which becomes $(LBR(\omega^R), \pi)$. This is done such that step 2. from Algorithm 18 \cite[18]{Vagner2007} can be precomputed.
+This is actually not completely true since instead of using the LLP configuration $(\alpha, \omega, \pi)$ as is, the list homomorphisms in algorithm 18 \cite[18]{Vagner2007} which results in the tuples $(RBR(\alpha)LBR(\omega^R), \pi)$ besides for the starting pairs $(\varepsilon, \vdash w)$ where $w \in T^*$ which becomes $(LBR(\omega^R), \pi)$. This is done such that step 2. from Algorithm 18 \cite[18]{Vagner2007} can be precomputed.
 
 Since \lstinline|key_to_config| is mapped over an array of $(x,y)$ input pairs this will result in the Futhark compiler not knowing how much memory needs to be allocated. This is also a problem since in the parser generator terminals and nonterminals are strings, so they may have different lengths.
 
@@ -25,7 +25,7 @@ def key_to_config (key : ((u32), (u32))) : maybe ([]bracket, []u32) =
 \end{lstlisting}
 The returned configurations are inside a \lstinline|Maybe|-like type. So if at any point \lstinline|#nothing| is returned then an invalid string pair was returned and therefore $(x,y)$ was not an admissable pair. This table function above arises from the following grammar where each subscript correspondx to the integers.
 \begin{align*}
-    0. \: S'_0 \to \vdash_0 A_1 \dashv_1 \qquad 1. \: A_1 \to a_2 A_1 \qquad 2. \: A_1 \to b_3 \qquad 3. \: A_1 \to \epsilon
+    0. \: S'_0 \to \vdash_0 A_1 \dashv_1 \qquad 1. \: A_1 \to a_2 A_1 \qquad 2. \: A_1 \to b_3 \qquad 3. \: A_1 \to \varepsilon
 \end{align*}
 
 \subsubsection{Bracket Matching}

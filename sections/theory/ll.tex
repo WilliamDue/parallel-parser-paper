@@ -1,12 +1,12 @@
-For the construction of a $\LLP(q,k)$ parser generator the construction of first and follow-set \cite[5]{Vagner2007} and a $\LL(k)$ parser generator is needed.
+To construct a $\LLP(q,k)$ parser generator the construction of $\FIRST$ sets, $\FOLLOW$ sets \cite[5]{Vagner2007} and a $\LL(k)$ parser generator is needed.
 
 \subsubsection{\texorpdfstring{$\FIRST_k$}{TEXT} and \texorpdfstring{$\FOLLOW_k$}{TEXT}}
-In this section a short explanation of the construction of first and follow sets will be given. During the research of this project it was found $k = 1$ was quite often explained but never $k > 1$ since this was often seen as trivial.
+During the research of this project it was quite often explained how to construct $\FIRST_k$ and $\FOLLOW_k$ where $k = 1$ but never $k > 1$ since this was often seen as trivial.
 
-The first and follow set algorithms described takes heavy inspiration from Mogensens book ``Introduction to Compiler Design'' \cite[55-65]{Mogensen} and the parser notes \cite[10-15]{notes:parser} by Sestoft and Larsen. The modifications are mainly using the $\LL(k)$ extension described in the Wikipedia article in the section ``Constructing an LL(k) parsing table''\footnote{At the time of writing the Wikipedia article does have a description of constructing first and follow sets for $k > 1$. The problem is the algorithm described does not fullfill the definition of first and follow sets that is being used in the LLP paper \cite[5]{Vagner2007}.} \cite{wiki:LL_parser}.
+The FIRST and FOLLOW set algorithms described takes heavy inspiration from Mogensens book ``Introduction to Compiler Design'' \cite[55-65]{Mogensen} and the parser notes \cite[10-15]{notes:parser} by Sestoft and Larsen. The modifications are mainly using the $\LL(k)$ extension described in the Wikipedia article in the section ``Constructing an LL(k) parsing table''\footnote{At the time of writing the Wikipedia article does have a description of constructing first and follow sets for $k > 1$. The problem is the algorithm described does not fullfill the definition of first and follow sets that is being used in the LLP paper \cite[5]{Vagner2007}.} \cite{wiki:LL_parser}.
 
 \begin{definition}[Truncated product]
-    Let $G = (N, T, P, S)$ be a context-free grammar, $A, B \subseteq (N \cup T)^*$\footnote{Let $Z$ be an alphabet, $Z^*$ is defined to be $\epsilon \in Z^*$ and $Z^* \defeq \{tv : t \in Z, v \in Z^*\}$} be sets of symbol strings and $\omega, \delta \in (T \cup N)^*$. The truncated product is defined in the following way.
+    Let $G = (N, T, P, S)$ be a context-free grammar, $A, B \subseteq (N \cup T)^*$\footnote{Let $Z$ be an alphabet, $Z^*$ is defined to be $\varepsilon \in Z^*$ and $Z^* \defeq \{tv : t \in Z, v \in Z^*\}$} be sets of symbol strings and $\omega, \delta \in (T \cup N)^*$. The truncated product is defined in the following way.
     \begin{gather*}
         A \truncprod{k} B \defeq \left\{\underset{\gamma \in \{\omega \, : \, \omega\delta = \alpha\beta, |\omega| \leq k\}}{\arg \max} \; |\gamma| : \alpha \in A, \beta \in B\right\}
     \end{gather*}
@@ -14,17 +14,18 @@ The first and follow set algorithms described takes heavy inspiration from Mogen
 \noindent The truncated product can be computed by hand by concatenating each element $\alpha \in A$ in front of every element $\beta \in B$. This results in a new set, then the $k$ first symbols of each element in this set is kept while the rest is discarded. 
 
 \begin{definition}[Nonempty substring pairs]
-    Let $G = (N, T, P, S)$ be a context-free grammar, $\omega \in (N \cup T)^*$ be a symbol string and $\alpha, \beta \in (N \cup T)^+$\footnote{$Z^+ \defeq Z^*\backslash \{\epsilon\}$} be nonempty symbol strings. The set of every nonempty way to split $\omega$ into two substrings is defined to be.
+    Let $G = (N, T, P, S)$ be a context-free grammar, $\omega \in (N \cup T)^*$ be a symbol string and $\alpha, \beta \in (N \cup T)^+$\footnote{$Z^+ \defeq Z^*\backslash \{\varepsilon\}$} be nonempty symbol strings. The set of every nonempty way to split $\omega$ into two substrings is defined to be.
     \begin{gather*}
         \varphi(\omega) \defeq \{(\alpha, \beta) : \alpha\beta = \omega\}
     \end{gather*}
 \end{definition}
+\noindent Using these definitions the $\FIRST_k$ and $\FOLLOW_k$ algorithms can now be described.
 
 \begin{algorithm}[Solving $\FIRST_k$ sets]
     \label{algorithm:first}
-    Let $G = (N, T, P, S)$ be a context-free grammar and $\FIRST_k: (N \cup T)^* \to \mathbb{P}(T^*)$\footnote{$\mathbb{P}$ is the powerset.}. The first-sets for a given string can be solved as followed.
+    Let $G = (N, T, P, S)$ be a context-free grammar and $\FIRST_k: (N \cup T)^* \to \mathbb{P}(T^*)$\footnote{$\mathbb{P}$ is the powerset.}. The first set for a given string can be solved as followed.
     \begin{align*}
-        \FIRST_k(\epsilon) =&\,\, \{\epsilon\} \\
+        \FIRST_k(\varepsilon) =&\,\, \{\varepsilon\} \\
         \FIRST_k(t) =&\,\, \{t\} \\
         \FIRST_k(A) =&\,\, \bigcup_{\delta \, : \, A \to \delta \in P} \FIRST_k(\delta) \\
         \FIRST_k(\omega) =&\,\, \bigcup_{(\alpha, \beta) \, \in \, \varphi(\omega)} \FIRST_k(\alpha) \truncprod{k} \FIRST_k(\beta)
@@ -32,18 +33,19 @@ The first and follow set algorithms described takes heavy inspiration from Mogen
 \end{algorithm}
 \noindent This may result in an infinite loop if implemented as is, so fixed point iteration is used to solve this system of set equations. Let $\mathcal{M}: N \to \mathbb{P}(T^*)$ be a surjective function which maps nonterminals to sets of terminal strings, this function can be thought of as a dictionary. $\FIRST'_k$ is then the following modified version of $\FIRST_k$.
 \begin{align*}
-    \FIRST'_k(\epsilon, \mathcal{M}) =&\,\, \{\epsilon\} \\
+    \FIRST'_k(\varepsilon, \mathcal{M}) =&\,\, \{\varepsilon\} \\
     \FIRST'_k(t, \mathcal{M}) =&\,\, \{t\} \\
     \FIRST'_k(A, \mathcal{M}) =&\,\, \mathcal{M}(A) \\
     \FIRST'_k(\omega, \mathcal{M}) =&\,\, \bigcup_{(\alpha, \beta) \, \in \, \varphi(\omega)} \FIRST'_k(\alpha, \mathcal{M}) \truncprod{k} \FIRST'_k(\beta, \mathcal{M})
 \end{align*}
-This function is then used to solve for a $\FIRST_k$ function for some fixed $k$ with fixed point iteration the following way.
+This function is then used to solve for a $\FIRST_k$ function for some fixed $k$ with fixed point iteration.
 \begin{enumerate}
     \item Initialize a dictionary $\mathcal{M}_0$ such that $\mathcal{M}_0(A) = \emptyset$ for all $A \in N$.
     \item A new dictionary $\mathcal{M}_{i+1}: N \to \mathbb{P}(T^*)$ is constructed by $\mathcal{M}_{i+1}(A) = \bigcup_{\delta \, : \, A \to \delta \in P} \FIRST'_k(\delta, \mathcal{M}_{i})$ for all $A \in N$ where $\mathcal{M}_{i}$ is the last dictionary that was constructed.
     \item If $\mathcal{M}_{i + 1} = \mathcal{M}_{i}$ then terminate the algorithm else recompute step 2.
-    \item Let $\mathcal{M}_f$ be the dictionary such that $f$ is the greatest index. It then holds that $\FIRST_k(\omega) = \FIRST'_k(\omega, \mathcal{M}_f)$ if $k$ stays fixed.
+    \item Let $\mathcal{M}_f$ be the dictionary last dictionary constructed during the fixed point iteration. It then holds that $\FIRST_k(\omega) = \FIRST'_k(\omega, \mathcal{M}_f)$ if $k$ stays fixed.
 \end{enumerate}
+Now that the $\FIRST_k$ sets can be computed, the $\FOLLOW_k$ set can also be computed. 
 \begin{algorithm}[Solving $\FOLLOW_k$ sets]
     \label{algorithm:follow}
     Let $G = (N, T, P, S)$ be a context\-free grammar and $\FOLLOW_k: N \to \mathbb{P}(T^*)$. The follow set for a given nonterminal can be solved as followed.
@@ -61,12 +63,12 @@ This $\FOLLOW'_k$ function for some fixed $k$ can then be computed using the fol
     \item Initialize a dictionary $\mathcal{M}_0$ such that $\mathcal{M}_0(A) = \emptyset$ for all $A \in N$ and $\mathcal{M}_0(S') = \{\square^k\}$.
     \item A new dictionary $\mathcal{M}_{i+1}: N \to \mathbb{P}(T^*)$ is constructed by $\mathcal{M}_{i+1}(A) = \bigcup_{B \,: \, B \to  \alpha A \beta \in P} \FIRST_k(\beta) \truncprod{k} \mathcal{M}_{i}(B)$ for all $A \in N$ where $\mathcal{M}_{i}$ is the last dictionary that was constructed.
     \item If $\mathcal{M}_{i+1} \neq \mathcal{M}_{i}$ then recompute step 3.
-    \item Let $\mathcal{M}_f$ be the dictionary such that $f$ is the greatest index. Let $\mathcal{M}_u$ be a dictionary where $\mathcal{M}_u(A) = \{\alpha : \alpha \square^* \in \mathcal{M}_f(A)\}$ for all $A \in N$.
-    \item It then holds that $\FOLLOW_k(A) = \mathcal{M}_u(A)$ if $k$ stays fixed for grammar $G$.
+    \item Let $\mathcal{M}_f$ be the dictionary last dictionary constructed during the fixed point iteration. Let $\mathcal{M}_u$ be a dictionary where $\mathcal{M}_u(A) = \{\alpha : \alpha \square^* \in \mathcal{M}_f(A)\}$ for all $A \in N$.
+    \item It then holds that $\FOLLOW_k(A) = \mathcal{M}_u(A)$ if $k$ stays fixed for the grammar $G$.
 \end{enumerate}
-Using $\FIRST_k$ and $\FOLLOW_k$ a $\LL(k)$ table which maps nonterminals and $k$ or less terminals to a production index.
+Using $\FIRST_k$ and $\FOLLOW_k$ a $\LL(k)$ table which maps nonterminals and $k$ or less terminals to the index of a production can be constructed.
 \begin{definition}[$\LL(k)$ table]
-    Let $G = (N, T, P, S)$ be a $\LL(k)$ context-free grammar and $\tau : N \times T^* \to \mathbb{P}(\mathbb{N})$. For a given production $A \to \delta = p_i \in P$ where $i \in \{0, ..., |P| - 1\}$ is a unique index.
+    Let $G = (N, T, P, S)$ be a $\LL(k)$ context-free grammar and $\tau : N \times T^* \to \mathbb{P}(\mathbb{N})$ denote the $\LL(k)$ table. For a given production $A \to \delta = p_i \in P$ where $i \in \{0, ..., |P| - 1\}$ is a unique index.
     \begin{gather*}
         i \in \tau(A, s) \text{ where } s \in \FIRST_k(\delta) \truncprod{k} \FOLLOW_k(A)
     \end{gather*}
@@ -74,11 +76,11 @@ Using $\FIRST_k$ and $\FOLLOW_k$ a $\LL(k)$ table which maps nonterminals and $k
 \noindent If for a given grammar it holds that $|\tau(A, s)| = 1$ for all $(A, s) \in N \times T^*$ then the grammar is $\LL(k)$.
 
 \subsubsection{LL Parsing}
-To describe how LL parsing is done a definition for a given state during $\LL(k)$ parsing is needed. First a definition for production sequences is needed.
+To describe how LL parsing is done, a definition for a given state during $\LL(k)$ parsing is needed. First a definition for production sequences is needed.
 
 \begin{definition}[Production sequence]
     \label{def:production-sequence}
-    Let $G = (N, T, P, S)$ be a context-free grammar where each production $p_i \in P$ is assigned a unique integer $i \in \{0, ..., |P| - 1\} = \mathcal{I}$. Then the set of every valid and invalid sequence of productions $\mathcal{S}$\footnote{It is chosen to use a sequence for the ``prefix of a left parse'' \cite[5]{Vagner2007} because it seemed like a better choice than the grammar notation.} is given by.
+    Let $G = (N, T, P, S)$ be a context-free grammar where each production $p_i \in P$ is assigned a unique integer $i \in \{0, ..., |P| - 1\} = \mathcal{I}$. Then the set of every valid and invalid sequence of productions indexes $\mathcal{S}$\footnote{It is chosen to use a sequence for the ``prefix of a left parse'' \cite[5]{Vagner2007} because it seemed like a better choice than the grammar notation.} is given by.
     \begin{align*}
         \mathcal{S} = \{(a_k)_{k=0}^n : n \in \mathbb{N}, a_k \in \mathcal{I}\}
     \end{align*}
@@ -91,9 +93,9 @@ To describe how LL parsing is done a definition for a given state during $\LL(k)
     \begin{align*}
         (w, \alpha, \pi) \in T^* \times (T \cup N)^* \times \mathcal{S}
     \end{align*}
-    For a $\LL(k)$ parser configuration $(w, \alpha, \pi)$ where $w$ denote the input string, $\alpha$ denote the pushdown store and $\pi$ denote the sequence of rules used to derive the consumed input string.
+    Where $w$ is the suffix of an input string, $\alpha$ is the current states pushdown store and $\pi$ is the prefix of a production sequence used to derive the input string.
 \end{definition}
-\noindent When using deterministic $\LL(k)$ parsing you want to create a parsing function. To define how such a function is created the LL parsing relation is defined. This relation holds if the left LL configuration can turn into the right LL configuration after parsing the left configuration.
+\noindent When using deterministic $\LL(k)$ parsing you want to create a parsing function. To define how such a function is created the LL parsing relation is defined. This relation holds if the left LL configuration can turn into the right LL configuration after the left configuration pops the top element of the pushdown store.
 \begin{gather*}
     (w, \alpha, \pi) \vdash (\bar{w}, \bar{\alpha}, \bar{\pi}) \\
     \iff \\
@@ -101,11 +103,11 @@ To describe how LL parsing is done a definition for a given state during $\LL(k)
     \lor \\
     \underbrace{\left(\alpha = A\omega \land \tau(A, \FIRST_k(w)) = i \land p_i = A \to \delta \land \delta\omega = \bar{\alpha} \land \pi i = \bar{\pi} \land w = \bar{w}\right)}_{\text{Stack deriving condition}}
 \end{gather*}
-The pop condition means if the left configuration has an input string and a pushdown store with the same first terminal. And the right configuration matches the left configuration, but the first terminal is popped.
+The pop condition is if the left configuration has an input string and a pushdown store with the same first terminal. And the right configuration matches the left configuration, but the first terminal is popped from the stack and input.
 
-The deriving condition means if the pushdown store $\alpha$ of the left LL configuration has a first element that is a nonterminal $A$. If the nonterminal together with the lookahead string results in a valid production index. And the right-hand side of the production is on top of the pushdown store on the right.
+The deriving condition is if the pushdown store $\alpha$ of the left LL configuration has a first element that is a nonterminal $A$. If the nonterminal together with the lookahead string results in a valid production index. And the right-hand side of the production is on top of the pushdown store on the right.
 
-It is a possibility this definition does not match the definition in the paper fully \cite[6]{Vagner2007}. This is related to the notation used in Algorithm 13 \cite[15]{Vagner2007} which could be a mistake or a different notation, this will be discussed later. Besides for this problem the relation will correspond to a single state during LL parsing.
+It is a possibility this definition does not match the definition in the paper fully \cite[6]{Vagner2007}. This is related to the notation used in Algorithm 13 \cite[15]{Vagner2007} which could be a mistake, this will be discussed later. Besides for this problem the relation will correspond to a single change in state during LL parsing.
 
 This relation is expanded upon by introducing the relation $\vdash^*$ which is reflexive and transitive, therefore the relation may hold if.
 \begin{gather*}
@@ -115,8 +117,8 @@ Or the relation may hold if.
 \begin{gather*}
     (w_1, \alpha_1, \pi_1) \vdash^*  (w_n, \alpha_n, \pi_n) \\ \iff \\ (w_1, \alpha_1, \pi_1) \vdash (w_2, \alpha_2, \pi_2) \vdash \dots \vdash (w_n, \alpha_n, \pi_n)
 \end{gather*}
-The relation holds if and only if any of these condition are fufilled. This parsing relation can be used to define the following parsing function $\phi: T^* \to \mathcal{S}$.
+The relation holds if and only if any of these conditions are fulfilled. This parsing relation can be used to define the following parser function $\phi: T^* \to \mathcal{S}$.
 \begin{align*}
-    \phi(w) = \pi \text{ where } (w, S, (\;)) \vdash^* (\epsilon, \epsilon, \pi) 
+    \phi(w) = \pi \text{ where } (w, S, (\;)) \vdash^* (\varepsilon, \varepsilon, \pi) 
 \end{align*}
 If the $\vdash^*$ relation does not hold then $w$ can not be parsed. 
