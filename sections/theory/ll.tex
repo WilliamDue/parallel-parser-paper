@@ -99,7 +99,7 @@ To describe how LL parsing is done, a definition for a given state during $\LL(k
 \begin{gather*}
     (w, \alpha, \pi) \vdash (\bar{w}, \bar{\alpha}, \bar{\pi}) \\
     \iff \\
-    \underbrace{(a \in T \land w = a\bar{w} = a\bar{\alpha} = \alpha \land \pi = \bar{\pi})}_{\text{Popping condition}} \\
+    \underbrace{(a \in T \land w = a\bar{w} \land a\bar{\alpha} = \alpha \land \pi = \bar{\pi})}_{\text{Popping condition}} \\
     \lor \\
     \underbrace{\left(\alpha = A\omega \land \tau(A, \FIRST_k(w)) = i \land p_i = A \to \delta \land \delta\omega = \bar{\alpha} \land \pi i = \bar{\pi} \land w = \bar{w}\right)}_{\text{Deriving condition}}
 \end{gather*}

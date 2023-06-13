@@ -82,7 +82,7 @@ This can be fixed by changing the PSLS definition such that it is dependent on $
         \item If a set of $\LLP(q, k)$ items has been constructed, then a new set $D_j$ is constructed
         for each symbol $X \in N' \cup T'$ standing just before the dot in $D_i$. The set $D_j$ is constructed as follows:
         \begin{enumerate}
-            \item $D_j := \{[Y \to \alpha\bigdot X \beta, u_j, v_j, \gamma] : [Y \to aX\bigdot\beta, u_i, v_i, \delta] \in D_i, u_j \in \bigcup_{\omega \in \BEFORE_q(Y) \alpha} \LAST_q(\omega), v_j \in \FIRST_k(Xv_i), \gamma$ is the shortests prefix of $X\delta$ such that $y \in \FIRST_k(\gamma)\}$.
+            \item $D_j := \{[Y \to \alpha\bigdot X \beta, u_j, v_j, \gamma] : [Y \to aX\bigdot\beta, u_i, v_i, \delta] \in D_i, u_j \in \bigcup_{\omega \in \BEFORE_q(Y) \alpha} \LAST_q(\omega), v_j \in \FIRST_k(Xv_i), \gamma$ is the shortests prefix of $X\delta$ such that $v_j \in \FIRST_k(\gamma)\}$.
             \item If $[X \to \alpha Y\bigdot \beta, u, v,\gamma] \in D_j, Y \in N'$ and $Y \to \delta \in P'$, then $D_j := D_j \cup \{[Y \to \delta \bigdot , u', v, \gamma] : u' \in \bigcup_{\omega \in \BEFORE_q(Y) \delta} \LAST_q(\omega)\}$.
             \item Repeat step (3b) till no new item can be added into $D_j$.
             \item $C := C \cup \{D_j\}$
@@ -128,8 +128,8 @@ This grammar is $\LL(1)$, so you should be able to use Algorithm 8 to determine 
 The problem will occur due to the tuple $[S \to a S A\bigdot , b, \dashv, \dashv]$. This item will become a singleton set when grouping the set $D_1$ in the start of step 3. In step 3 (a) you are able to create the tuple $[S \to a S\bigdot A, b, \dashv, A \dashv]$. This is due to:
 \begin{align*}
     & b \in \bigcup_{\omega \in \BEFORE_1(S) aS} \LAST_1(\omega) = \bigcup_{\omega \in \{\vdash aS, aaS\}} \LAST_1(\omega) = \LAST_1(S) = \{b\} \\
-    & \dashv \: \in \FIRST_k(A\dashv) \text{ since } A \Rightarrow^* \varepsilon \\
-    & A\dashv \text{ is the shortests prefix of } A\dashv \text{ such that } y \in \FIRST_1(A\dashv)
+    & \dashv \:\, \in \FIRST_1(A\dashv) \text{ since } A \Rightarrow^* \varepsilon \\
+    & A\dashv \text{ is the shortests prefix of } A\dashv \text{ such that } \dashv \:\,\in \FIRST_1(A\dashv)
 \end{align*}
 Because $[S \to a S\bigdot A, b, \dashv, A \dashv]$ occurs, then the production $S \to a S A\bigdot$ also appears in some item in $D_j$ due to step 3 (b). This item has the same prefix and same shortest prefix as $[S \to a S\bigdot A, b, \dashv, A \dashv]$. The suffix $b$ will also appear in the next tuple because. 
 \begin{align*}
