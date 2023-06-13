@@ -16,7 +16,7 @@ The property tested for is if an arbitrary $\LLP(q,k)$ parser is able to parse l
 
 This property would translate to let $G = (N, T, P, S)$ be a $\LLP(q, k)$ grammar, $\varphi : T^* \to \mathcal{S}$ be a $\LL(k)$ parser and $\Pi : T^* \to \mathcal{S}$ be a $\LLP(q, k)$ parser. These parser functions generate the production sequence if the input can be parsed else the empty sequence is produced. The property tested for is then\footnote{$S \Rightarrow^*_{lm} s$ means all leftmost derivable strings from the start of the grammar. $\Rightarrow^*_{lm}$ allows only for left derivations and is reflexive and transitive.}.
 \begin{align*}
-    \forall s \in T^* : S \Rightarrow^*_{lm} s \land \Pi(s) = \varphi(s)
+    \forall s \in T^* : \Pi(s) = \varphi(s)
 \end{align*}
 These tests are done for 50 random $\LLP(1,1)$ grammars, 50 $\LLP(2,2)$ and 50 $\LLP(3,3)$ grammars. Where the leftmost derivable strings are of length 20 or less and not leftmost derivable string are of length 6 or less.
 

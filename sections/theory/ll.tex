@@ -61,7 +61,7 @@ This $\FOLLOW'_k$ function for some fixed $k$ can then be computed using the fol
 \begin{enumerate}
     \item Extend the grammar $G = (N, T, P, S)$ using $G' = (N', T', P', S') = (N \cup \{S'\}, T \cup \{\square\}, P \cup \{S' \to S \square^k\}, S')$.
     \item Initialize a dictionary $\mathcal{M}_0$ such that $\mathcal{M}_0(A) = \emptyset$ for all $A \in N$ and $\mathcal{M}_0(S') = \{\square^k\}$.
-    \item A new dictionary $\mathcal{M}_{i+1}: N \to \mathbb{P}(T^*)$ is constructed by $\mathcal{M}_{i+1}(A) = \bigcup_{B \,: \, B \to  \alpha A \beta \in P} \FIRST_k(\beta) \truncprod{k} \mathcal{M}_{i}(B)$ for all $A \in N$ where $\mathcal{M}_{i}$ is the last dictionary that was constructed.
+    \item A new dictionary $\mathcal{M}_{i+1}: N' \to \mathbb{P}(T^*)$ is constructed by $\mathcal{M}_{i+1}(A) = \bigcup_{B \,: \, B \to  \alpha A \beta \in P} \FIRST_k(\beta) \truncprod{k} \mathcal{M}_{i}(B)$ for all $A \in N'$ where $\mathcal{M}_{i}$ is the last dictionary that was constructed.
     \item If $\mathcal{M}_{i+1} \neq \mathcal{M}_{i}$ then recompute step 3.
     \item Let $\mathcal{M}_f$ be the dictionary last dictionary constructed during the fixed point iteration. Let $\mathcal{M}_u$ be a dictionary where $\mathcal{M}_u(A) = \{\alpha : \alpha \square^* \in \mathcal{M}_f(A)\}$ for all $A \in N$.
     \item It then holds that $\FOLLOW_k(A) = \mathcal{M}_u(A)$ if $k$ stays fixed for the grammar $G$.
