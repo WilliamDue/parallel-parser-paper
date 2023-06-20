@@ -61,7 +61,7 @@ This can be fixed by changing the PSLS definition such that it is dependent on $
         \PSLS_k(x, y) = \{ & \alpha : \exists S \Rightarrow^*_{lm} wuA\beta \Rightarrow wxB\gamma \Rightarrow^* wxy\delta, \\
         & w, u \in T^*, A, B \in N, \alpha, \beta, \gamma, \delta \in (N \cup T)^*, u \neq x, \\
         & \alpha \text{ is the shortest prefix of } B\gamma \text{ such that } y \in \FIRST_k(\alpha) \} \\
-        \cup \: \{ & y : \exists S \Rightarrow^* wuA\beta \Rightarrow wxa\gamma \Rightarrow wxy\delta, \\
+        \cup \: \{ & y : \exists S \Rightarrow^* wuA\beta \Rightarrow wxa\gamma \Rightarrow^* wxy\delta, \\
         & a = \FIRST_1(y), w,u \in T^*, \beta, \gamma, \delta \in (N \cup T)^*, u \neq x \}
     \end{align*}
 \end{definition}
@@ -103,7 +103,7 @@ This can be fixed by changing the PSLS definition such that it is dependent on $
 \end{table}
 \noindent Using the new definition to create the LLP configuration from $Aa\dashv$ which is the table $(\vdash a,a \dashv)$ would now succeed. This is due to $(a \dashv, Aa\dashv, ()) \vdash (a \dashv, a\dashv, 1) \vdash ( \dashv, \dashv, 1)$.
 
-This changed definition would still work for $\LLP$ parsing. The difference is the prefix of a suffix of a sentential form found via $\PSLS$ is now guaranteed to be able to parse the first symbol. Since the pushdown store will always have enough symbols to derive the $k$ first symbols of the input.
+This changed definition would still work for $\LLP$ parsing. The difference is the prefix of a suffix of a leftmost sentential form found via $\PSLS$ is now guaranteed to be able to parse the first symbol. Since the pushdown store will always have enough symbols to derive the $k$ first symbols of the input.
 
 It is important to note that this argument needs some assumptions. Before these assumptions will be accounted for a typo in Algorithm 13 \cite[15]{Vagner2007} will be cleared up. This typo is the pushdown store and input string is switched in the 3-tuple because of the definition in the LLP paper \cite[5]{Vagner2007}.
 
@@ -145,7 +145,7 @@ The problem is since the production, suffix and prefix is the same as the tuple 
     \{& [A \to \bigdot , b, \dashv, A A \dashv],[S \to a S\bigdot A, b, \dashv, A A \dashv], \\
     & [S \to a S A\bigdot , b, \dashv, A A \dashv],[S \to b\bigdot , b, \dashv, A A \dashv]\}
 \end{align*}
-Therefore the item $[S \to a S\bigdot A, b, \dashv, A^* \dashv]$ will appear infinitely many times in different sets. Algorithm 8 only terminates if a fixed point is reached, but this is impossible, so it will not halt.
+Therefore the item $[S \to a S A \bigdot, b, \dashv, A^* \dashv]$ will appear infinitely many times in different sets. Algorithm 8 only terminates if a fixed point is reached, but this is impossible, so it will not halt.
 
 This algorithm was not fixed in this paper, instead a grammar is checked for the following. Let $G = (N, T, P, S)$ be a context-free grammar, this grammar may cause an infinite loop if.
 \begin{align*}

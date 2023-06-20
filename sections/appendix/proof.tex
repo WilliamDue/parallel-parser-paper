@@ -1,0 +1,27 @@
+It will be shown that given two neighbouring admissible pairs $(x_1, y_1)$ and $(x_2, y_2)$ will always result in LLP configurations that are glueable. Consider the following substring $cdefg$ where $c, e, g \in T$ and $d, f \in T^*$. The admissible pairs in this case are $(cd, ef)$ and $(de, fg)$. First the initial pushdown store is computed using $\PSLS_k(cd, ef)$ and $\PSLS_k(de, fg)$. The pair $(cd, ef)$ can result in an initial pushdown store due to the first or second set in the PSLS definition. This would mean the following condition may hold.
+\begin{align*}
+    s_1) \qquad & \alpha : \exists S \Rightarrow^*_{lm} wuD\kappa \Rightarrow wcdA\sigma \Rightarrow^* wcdefg\delta \\
+    & \text{where } \alpha \text{ is the shortest prefix of } B\gamma \text{ such that } ef \in \FIRST_k(\alpha) \\
+    s_2) \qquad & ef : \exists S \Rightarrow^* wuD\kappa \Rightarrow wcda\sigma \Rightarrow^* wcdefg\delta \\
+    & \text{where } a = \FIRST_1(ef)
+\end{align*}
+And for the pair $(cd, ef)$ it may hold that.
+\begin{align*}
+    e_1) \qquad & \beta : \exists S \Rightarrow^*_{lm} wvC\mu \Rightarrow wcdeB\gamma \Rightarrow^* wcdefg\delta \\
+    & \text{where } \beta \text{ is the shortest prefix of } B\gamma \text{ such that } fg \in \FIRST_k(\beta) \\
+    e_2) \qquad & fg : \exists S \Rightarrow^* wuD\kappa \Rightarrow wcdeb\gamma \Rightarrow^* wcdefg\delta \\
+    & \text{where } b = \FIRST_1(fg)
+\end{align*}
+If you consider the case that $(cd, ef)$ results in $s_1$ being true then $e_1$ and/or $e_2$ may hold. If $e_1$ holds then it must be true that.
+\begin{align*}
+    A\sigma \Rightarrow^*_{lm} eB\gamma
+\end{align*}
+Then in the context of LL parsing it must mean $(ef, A\sigma, ()) \vdash^* (f, B\gamma, \pi)$. It then also must be true that $(ef, \alpha, ()) \vdash^* (f, \chi, ())$ where $\chi\nu = \beta$ where $\chi, \nu \in (T \cup N)^*$. Then since the final pushdown store $\chi$ is a prefix of/or equal to the initial pushdown store $\beta$ they are glueable.
+
+If $s_1$ and $e_2$ holds.
+\begin{align*}
+    A\sigma \Rightarrow^*_{lm} b\gamma 
+\end{align*}
+Then in the context of LL parsing it must mean $(ef, A\sigma, ()) \vdash^* (f, b\gamma, \pi)$. It then also must be true that $(ef, \alpha, ()) \vdash^* (f, n, ())$ where $nm = fg$ and $n, m \in T^*$. Then since the final pushdown store $n$ is a prefix of/or equal to the initial pushdown store $\beta$ they are glueable.
+
+The same kind of argument can be used for the case that $s_2$ and $e_1$ and/or $s_2$ and $e_2$ holds.
