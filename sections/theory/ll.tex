@@ -31,7 +31,7 @@ The FIRST and FOLLOW set algorithms described takes heavy inspiration from Mogen
         \FIRST_k(\omega) =&\,\, \bigcup_{(\alpha, \beta) \, \in \, \varphi(\omega)} \FIRST_k(\alpha) \truncprod{k} \FIRST_k(\beta)
     \end{align*}
 \end{algorithm}
-\noindent This may result in an infinite loop if implemented as is, so fixed point iteration is used to solve this system of set equations. Let $\mathcal{M}: N \to \mathbb{P}(T^*)$ be a surjective function which maps nonterminals to sets of terminal strings, this function can be thought of as a dictionary. $\FIRST'_k$ is then the following modified version of $\FIRST_k$.
+\noindent This may result in an infinite loop if implemented as is, so fixed point iteration is used to solve this system of set equations. Let $\mathcal{M}: N \to \mathbb{P}(T^*)$ be a function which maps nonterminals to sets of terminal strings, this function can be thought of as a dictionary. $\FIRST'_k$ is then the following modified version of $\FIRST_k$.
 \begin{align*}
     \FIRST'_k(\varepsilon, \mathcal{M}) =&\,\, \{\varepsilon\} \\
     \FIRST'_k(t, \mathcal{M}) =&\,\, \{t\} \\
@@ -53,7 +53,7 @@ Now that the $\FIRST_k$ sets can be computed, the $\FOLLOW_k$ set can also be co
         \FOLLOW_k(A) &= \bigcup_{B \, : \, B \to \alpha A \beta \in P} \FIRST_k(\beta) \truncprod{k} \FOLLOW_k(B)
     \end{align*}
 \end{algorithm}
-\noindent Once again this may not terminate so fixed point iteration can be used to solve the equation with the following altered $\FOLLOW_k$ where $\mathcal{M}: N \to \mathbb{P}(T^*)$ is a surjective function.
+\noindent Once again this may not terminate so fixed point iteration can be used to solve the equation with the following altered $\FOLLOW_k$ where $\mathcal{M}: N \to \mathbb{P}(T^*)$ is a function.
 \begin{align*}
     \FOLLOW'_k(A, \mathcal{M}) &= \bigcup_{B \,: \, B \to \alpha A \beta \in P} \FIRST_k(\beta) \truncprod{k} \mathcal{M}(B)
 \end{align*}
