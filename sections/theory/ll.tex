@@ -73,7 +73,7 @@ Using $\FIRST_k$ and $\FOLLOW_k$ a $\LL(k)$ table which maps nonterminals and $k
         i \in \tau(A, s) \text{ where } s \in \FIRST_k(\delta) \truncprod{k} \FOLLOW_k(A)
     \end{gather*}
 \end{definition}
-\noindent If for a given grammar it holds that $|\tau(A, s)| = 1$ for all $(A, s) \in N \times T^*$ then the grammar is $\LL(k)$.
+\noindent If for a given grammar it holds that $|\tau(A, s)| \leq 1$ for all $(A, s) \in N \times T^*$ then the grammar is $\LL(k)$.
 
 \subsubsection{LL Parsing}
 To describe how LL parsing is done, a definition for a given state during $\LL(k)$ parsing is needed. First a definition for production sequences is needed.
